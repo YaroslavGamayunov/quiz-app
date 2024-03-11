@@ -14,8 +14,7 @@ class RegistrationCredentialsForm extends StatefulWidget {
   RegistrationCredentialsForm({required this.onContinue});
 
   @override
-  State<StatefulWidget> createState() =>
-      _RegistrationCredentialsFormState(onContinue: onContinue);
+  State<StatefulWidget> createState() => _RegistrationCredentialsFormState();
 }
 
 class _RegistrationCredentialsFormState
@@ -26,10 +25,6 @@ class _RegistrationCredentialsFormState
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordConfirmationController =
       TextEditingController();
-
-  Function() onContinue;
-
-  _RegistrationCredentialsFormState({required this.onContinue});
 
   @override
   void initState() {
@@ -51,54 +46,45 @@ class _RegistrationCredentialsFormState
   @override
   Widget build(BuildContext context) {
     _registrationBloc = BlocProvider.of<RegistrationFlowBloc>(context);
-    return Scaffold(
-        body: Container(
-            margin: EdgeInsets.symmetric(horizontal: 24),
-            child: BlocBuilder<RegistrationFlowBloc, ValidationState>(
-                bloc: _registrationBloc,
-                builder: (context, state) {
-                  return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 48),
-                        Text(
-                          "Регистрация",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline1!
-                              .copyWith(color: Colors.black),
-                        ),
-                        Spacer(),
-                        PepFormField(
-                          controller: _emailController,
-                          hint: "Введите Email",
-                        ),
-                        SizedBox(height: 24),
-                        PepFormField(
-                            controller: _passwordController,
-                            hint: "Введите пароль",
-                            obscureText: true),
-                        SizedBox(height: 24),
-                        PepFormField(
-                            controller: _passwordConfirmationController,
-                            hint: "Подтвердите пароль",
-                            obscureText: true),
-                        SizedBox(height: 24),
-                        Text((state is Incorrect ? state.errorMessage : ""),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(color: kPrimaryColor)),
-                        Spacer(),
-                        PepButton(
-                          onTap: onContinue,
-                          title: 'Продолжить',
-                        ),
-                        SizedBox(height: 32)
-                      ]);
-                })));
+    return BlocBuilder<RegistrationFlowBloc, ValidationState>(
+        bloc: _registrationBloc,
+        builder: (context, state) {
+          return PepRegistrationForm(
+              body: _form(context, state), onContinue: widget.onContinue);
+        });
   }
+
+  Widget _form(BuildContext context, ValidationState state) =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          "Регистрация",
+          style: Theme.of(context)
+              .textTheme
+              .headline1!
+              .copyWith(color: Colors.black),
+        ),
+        SizedBox(height: 32),
+        PepFormField(
+          controller: _emailController,
+          hint: "Введите Email",
+        ),
+        SizedBox(height: 24),
+        PepFormField(
+            controller: _passwordController,
+            hint: "Введите пароль",
+            obscureText: true),
+        SizedBox(height: 24),
+        PepFormField(
+            controller: _passwordConfirmationController,
+            hint: "Подтвердите пароль",
+            obscureText: true),
+        SizedBox(height: 24),
+        Text((state is Incorrect ? state.errorMessage : ""),
+            style: Theme.of(context)
+                .textTheme
+                .bodyText1!
+                .copyWith(color: kPrimaryColor))
+      ]);
 
   @override
   void dispose() {

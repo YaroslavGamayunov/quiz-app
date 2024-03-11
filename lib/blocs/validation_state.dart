@@ -19,3 +19,23 @@ class Incorrect extends ValidationState {
   @override
   List<Object?> get props => [errorMessage];
 }
+
+class CorrectStep extends Correct {
+  final int step;
+
+  CorrectStep({required this.step});
+
+  @override
+  List<Object?> get props => [step];
+}
+
+class IncorrectStep extends Incorrect {
+  final int step;
+  final String errorMessage;
+
+  IncorrectStep({required this.step, required this.errorMessage})
+      : super(errorMessage: errorMessage);
+
+  @override
+  List<Object?> get props => [step];
+}

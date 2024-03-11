@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pep/blocs/login_bloc.dart';
-import 'package:pep/blocs/validation_state.dart';
 import 'package:pep/constants.dart';
 import 'package:pep/screens/privacy_policy.dart';
-import 'package:pep/screens/registration_flow.dart';
 import 'package:pep/screens/registration_forms/login_credentials.dart';
 import 'package:pep/util/widgets.dart';
 

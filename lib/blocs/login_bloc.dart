@@ -18,7 +18,7 @@ class LoginBloc extends Cubit<ValidationState> {
     var result = validateEmailFormat(email);
     if (result != null) {
       emit(IncorrectEmail());
-    } else if (isEmailRegistered(email)) {
+    } else if (!isEmailRegistered(email)) {
       emit(NeedsRegistration());
     } else {
       emit(Correct());

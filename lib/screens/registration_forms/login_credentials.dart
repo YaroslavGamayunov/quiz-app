@@ -45,34 +45,10 @@ class LoginState extends State<LoginCredentialsForm> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Spacer(),
-                            Text(
-                              "Вход",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline1!
-                                  .copyWith(color: Colors.black),
-                            ),
-                            SizedBox(height: 32),
-                            PepFormField(
-                              controller: _emailController,
-                              hint: "Введите Email",
-                            ),
-                            Visibility(
-                                visible: (state is! IncorrectEmail &&
-                                    state is! NeedsRegistration),
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 24),
-                                  child: PepFormField(
-                                      controller: _passwordController,
-                                      hint: "Введите пароль",
-                                      obscureText: true),
-                                )),
-                            SizedBox(height: 24),
-                            Text((state is Incorrect ? state.errorMessage : ""),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(color: kPrimaryColor)),
+                            SizedBox(height: 48),
+                            ConstrainedBox(
+                                constraints: BoxConstraints(minHeight: 300),
+                                child: _form(context, state)),
                             Spacer(),
                             PepButton(
                                 title: state is NeedsRegistration
@@ -81,22 +57,51 @@ class LoginState extends State<LoginCredentialsForm> {
                                 onTap: () => {
                                       if (state is NeedsRegistration)
                                         {
-                                          Navigator.of(context)
-                                              .pushAndRemoveUntil(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          RegistrationFlowPage()),
-                                                  (route) => false)
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      RegistrationFlowPage()))
                                         }
                                       else
                                         {
                                           // TODO: Log in
                                         }
                                     }),
-                            SizedBox(height: 32)
+                            SizedBox(height: 80),
                           ]);
                     }))));
   }
+
+  Widget _form(BuildContext context, ValidationState state) =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          "Вход",
+          style: Theme.of(context)
+              .textTheme
+              .headline1!
+              .copyWith(color: Colors.black),
+        ),
+        SizedBox(height: 32),
+        PepFormField(
+          controller: _emailController,
+          hint: "Введите Email",
+        ),
+        Visibility(
+            visible: (state is! IncorrectEmail && state is! NeedsRegistration),
+            child: Container(
+              margin: EdgeInsets.only(top: 24),
+              child: PepFormField(
+                  controller: _passwordController,
+                  hint: "Введите пароль",
+                  obscureText: true),
+            )),
+        SizedBox(height: 24),
+        Text((state is Incorrect ? state.errorMessage : ""),
+            style: Theme.of(context)
+                .textTheme
+                .bodyText1!
+                .copyWith(color: kPrimaryColor))
+      ]);
 
   @override
   void dispose() {

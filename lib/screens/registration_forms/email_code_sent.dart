@@ -12,35 +12,23 @@ class EmailCodeSent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 48),
-          Text(
-            "Регистрация",
+    return PepRegistrationForm(body: _form(context), onContinue: onContinue);
+  }
+
+  Widget _form(context) =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(
+          "Регистрация",
+          style: Theme.of(context)
+              .textTheme
+              .headline1!
+              .copyWith(color: Colors.black),
+        ),
+        SizedBox(height: 32),
+        Text("На ваш электронный адрес ${email()} отправлен код подтверждения",
             style: Theme.of(context)
                 .textTheme
-                .headline1!
-                .copyWith(color: Colors.black),
-          ),
-          SizedBox(height: 32),
-          Text(
-              "На ваш электронный адрес ${email()} отправлен код подтверждения",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText1!
-                  .copyWith(color: kPrimaryColor)),
-          Spacer(),
-          PepButton(
-            onTap: onContinue,
-            title: 'Продолжить',
-          ),
-          SizedBox(height: 32)
-        ],
-      ),
-    );
-  }
+                .bodyText1!
+                .copyWith(color: kPrimaryColor)),
+      ]);
 }

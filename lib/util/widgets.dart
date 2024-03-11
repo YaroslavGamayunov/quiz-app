@@ -12,9 +12,7 @@ class PepButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color buttonColor = color == null ? Theme
-        .of(context)
-        .accentColor : color!;
+    Color buttonColor = color == null ? Theme.of(context).accentColor : color!;
     return Material(
         color: buttonColor,
         borderRadius: BorderRadius.circular(5),
@@ -32,15 +30,14 @@ class PepButton extends StatelessWidget {
                 children: [
                   icon != null
                       ? Row(
-                    children: [
-                      icon!,
-                      SizedBox(width: 10),
-                    ],
-                  )
+                          children: [
+                            icon!,
+                            SizedBox(width: 10),
+                          ],
+                        )
                       : SizedBox.shrink(),
                   Text(title,
-                      style: Theme
-                          .of(context)
+                      style: Theme.of(context)
                           .textTheme
                           .button!
                           .copyWith(color: Colors.white))
@@ -56,13 +53,18 @@ class PepFormField extends StatelessWidget {
   final FormFieldSetter<String>? onSaved;
   final TextEditingController? controller;
   final bool obscureText;
+  final bool autoFocus;
+  final FocusNode? focusNode;
 
-  PepFormField({Key? key,
-    this.hint = "",
-    this.validator,
-    this.controller,
-    this.onSaved,
-    this.obscureText = false})
+  PepFormField(
+      {Key? key,
+      this.hint = "",
+      this.validator,
+      this.controller,
+      this.onSaved,
+      this.focusNode,
+      this.autoFocus = false,
+      this.obscureText = false})
       : super(key: key);
 
   @override
@@ -71,6 +73,8 @@ class PepFormField extends StatelessWidget {
       decoration: BoxDecoration(
           color: kInputBackgroundColor, borderRadius: BorderRadius.circular(5)),
       child: TextFormField(
+          autofocus: autoFocus,
+          focusNode: focusNode,
           controller: controller,
           validator: validator,
           obscureText: obscureText,
@@ -82,16 +86,70 @@ class PepFormField extends StatelessWidget {
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
               hintText: hint,
-              hintStyle: Theme
-                  .of(context)
+              hintStyle: Theme.of(context)
                   .textTheme
                   .bodyText1!
                   .copyWith(color: kSecondaryTextColor),
               contentPadding: EdgeInsets.all(16)),
-          style: Theme
-              .of(context)
-              .textTheme
-              .bodyText1!),
+          style: Theme.of(context).textTheme.bodyText1!),
     );
+  }
+}
+
+class PepRegistrationForm extends StatelessWidget {
+  final Widget body;
+  final Function() onContinue;
+
+  PepRegistrationForm({required this.body, required this.onContinue});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(slivers: [
+      SliverFillRemaining(
+          hasScrollBody: false,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Column(children: [
+              SizedBox(height: 32),
+              body,
+              SizedBox(height: 32),
+              Spacer(),
+              PepButton(title: "Продолжить", onTap: onContinue),
+              SizedBox(height: 80)
+            ]),
+          ))
+    ]);
+  }
+}
+
+class PepRadioButton<T> extends StatelessWidget {
+  final T value;
+  final T? groupValue;
+  final ValueChanged<T?>? onChanged;
+
+  PepRadioButton(
+      {required this.value, required this.groupValue, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+        scale: 1.5,
+        child: Radio(
+          value: value,
+          groupValue: groupValue,
+          onChanged: onChanged,
+          activeColor: kPrimaryColor,
+        ));
+    //fillColor: MaterialStateProperty.resolveWith(_getFillColor));
+  }
+
+  Color _getFillColor(Set<MaterialState> states) {
+    const Set<MaterialState> interactiveStates = <MaterialState>{
+      MaterialState.selected,
+    };
+    if (states.any(interactiveStates.contains)) {
+      return kPrimaryColor;
+    }
+    return kInputBackgroundColor;
   }
 }
