@@ -18,21 +18,21 @@ class PrivacyPolicy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: SvgPicture.asset("assets/ic_arrow_2.svg"),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-        body:
-            ListView(padding: EdgeInsets.symmetric(horizontal: 24), children: [
+        body: ListView(
+            padding: EdgeInsets.only(left: 24, right: 24, top: 50),
+            children: [
+          Container(
+              alignment: Alignment.topLeft,
+              child: InkResponse(
+                  child: SvgPicture.asset("assets/ic_arrow_2.svg"),
+                  onTap: () => Navigator.of(context).pop())),
           Container(
               margin: EdgeInsets.symmetric(vertical: 32),
               child: Text("Политика конфиденциальности",
                   style: Theme.of(context)
                       .textTheme
                       .headline1!
-                      .copyWith(color: Colors.black))),
+                      .copyWith(color: Colors.black, fontSize: 32))),
           FutureBuilder(
               future: _loadPrivacyPolicy(),
               builder: (context, snapshot) {
@@ -49,12 +49,12 @@ class PrivacyPolicy extends StatelessWidget {
                     child: CircularProgressIndicator());
               }),
           Container(
+            margin: EdgeInsets.symmetric(vertical: 72),
             child: PepButton(
                 title: "Подтвердить",
                 onTap: () {
                   Navigator.of(context).pop();
                 }),
-            margin: EdgeInsets.symmetric(vertical: 72),
           )
         ]));
   }

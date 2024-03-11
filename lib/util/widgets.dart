@@ -12,7 +12,9 @@ class PepButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color buttonColor = color == null ? Theme.of(context).accentColor : color!;
+    Color buttonColor = color == null ? Theme
+        .of(context)
+        .accentColor : color!;
     return Material(
         color: buttonColor,
         borderRadius: BorderRadius.circular(5),
@@ -30,14 +32,15 @@ class PepButton extends StatelessWidget {
                 children: [
                   icon != null
                       ? Row(
-                          children: [
-                            icon!,
-                            SizedBox(width: 10),
-                          ],
-                        )
+                    children: [
+                      icon!,
+                      SizedBox(width: 10),
+                    ],
+                  )
                       : SizedBox.shrink(),
                   Text(title,
-                      style: Theme.of(context)
+                      style: Theme
+                          .of(context)
                           .textTheme
                           .button!
                           .copyWith(color: Colors.white))
@@ -49,18 +52,29 @@ class PepButton extends StatelessWidget {
 
 class PepFormField extends StatelessWidget {
   final String hint;
-  final FormFieldValidator<String> validator;
+  final FormFieldValidator<String>? validator;
+  final FormFieldSetter<String>? onSaved;
+  final TextEditingController? controller;
+  final bool obscureText;
 
-  PepFormField({Key? key, this.hint = "", required this.validator})
+  PepFormField({Key? key,
+    this.hint = "",
+    this.validator,
+    this.controller,
+    this.onSaved,
+    this.obscureText = false})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Color(0xfff0f0f0), borderRadius: BorderRadius.circular(5)),
+          color: kInputBackgroundColor, borderRadius: BorderRadius.circular(5)),
       child: TextFormField(
+          controller: controller,
           validator: validator,
+          obscureText: obscureText,
+          onSaved: onSaved,
           decoration: InputDecoration(
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -68,12 +82,16 @@ class PepFormField extends StatelessWidget {
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
               hintText: hint,
-              hintStyle: Theme.of(context)
+              hintStyle: Theme
+                  .of(context)
                   .textTheme
                   .bodyText1!
                   .copyWith(color: kSecondaryTextColor),
               contentPadding: EdgeInsets.all(16)),
-          style: Theme.of(context).textTheme.bodyText1!),
+          style: Theme
+              .of(context)
+              .textTheme
+              .bodyText1!),
     );
   }
 }
