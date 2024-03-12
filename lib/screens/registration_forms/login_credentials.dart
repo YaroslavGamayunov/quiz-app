@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pep/blocs/login_bloc.dart';
 import 'package:pep/blocs/validation_state.dart';
 import 'package:pep/constants.dart';
+import 'package:pep/screens/home.dart';
 import 'package:pep/util/widgets.dart';
 
 import '../registration_flow.dart';
@@ -65,6 +66,12 @@ class LoginState extends State<LoginCredentialsForm> {
                                       else
                                         {
                                           // TODO: Log in
+                                          Navigator.of(context)
+                                              .pushAndRemoveUntil(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          HomePage()),
+                                                  (route) => false)
                                         }
                                     }),
                             SizedBox(height: 80),

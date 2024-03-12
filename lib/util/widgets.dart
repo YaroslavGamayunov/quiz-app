@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:pep/constants.dart';
 
 class PepButton extends StatelessWidget {
@@ -151,5 +152,66 @@ class PepRadioButton<T> extends StatelessWidget {
       return kPrimaryColor;
     }
     return kInputBackgroundColor;
+  }
+}
+
+class PepTestResultCard extends StatelessWidget {
+  final double resultPercent;
+  final Widget text;
+
+  PepTestResultCard({required this.resultPercent, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        decoration: BoxDecoration(boxShadow: [
+          BoxShadow(
+            color: Color(0x1a000000),
+            blurRadius: 20,
+            spreadRadius: 5,
+            offset: Offset(0, 1), // changes position of shadow
+          )
+        ]),
+        child: Material(
+            borderRadius: BorderRadius.circular(5),
+            child: Container(
+                padding:
+                    EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 24),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: text),
+                            SizedBox(width: 32),
+                            InkResponse(
+                                child: Container(
+                                    child: SvgPicture.asset(
+                                        'assets/ic_arrow_right.svg')),
+                                onTap: () {}),
+                          ]),
+                      SizedBox(height: 8),
+                      Text(
+                        '${(resultPercent * 100).round()}%',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline1!
+                            .copyWith(color: _getResultColor(resultPercent)),
+                      ),
+                      LinearProgressIndicator(
+                        color: _getResultColor(resultPercent),
+                        backgroundColor: kInputBackgroundColor,
+                        minHeight: 5.0,
+                        value: resultPercent,
+                      ),
+                    ]))));
+  }
+
+  Color _getResultColor(double percent) {
+    if (percent < 0.75) {
+      return Color(0xffe27c04);
+    }
+    return kPrimaryColor;
   }
 }
