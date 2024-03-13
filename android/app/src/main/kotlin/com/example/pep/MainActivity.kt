@@ -1,4 +1,4 @@
-package com.example.pep
+package com.yaroslavgamayunov.quizapp
 
 import io.flutter.embedding.android.FlutterActivity
 
