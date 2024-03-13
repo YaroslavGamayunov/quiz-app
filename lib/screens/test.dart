@@ -4,6 +4,9 @@ import 'package:pep/blocs/test_bloc.dart';
 import 'package:pep/blocs/test_bloc_state.dart';
 import 'package:pep/questions.dart';
 import 'package:pep/screens/question_pages/binary_question.dart';
+import 'package:pep/screens/question_pages/image_matching.dart';
+import 'package:pep/screens/question_pages/remember_words.dart';
+import 'package:pep/screens/question_pages/writing_answer.dart';
 import 'package:pep/screens/test_finished.dart';
 
 import '../constants.dart';
@@ -19,6 +22,7 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   late TestBloc _testBloc = TestBloc();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -39,21 +43,12 @@ class _TestPageState extends State<TestPage> {
         bloc: _testBloc,
         builder: (context, state) {
           if (state is OnQuestion) {
-            return CustomScrollView(slivers: [
+            return CustomScrollView(controller: _scrollController, slivers: [
               SliverPersistentHeader(
                   floating: true,
                   delegate:
                       _TestHeader(index: state.index, total: state.total)),
-              SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(children: [
-                      SizedBox(height: 16),
-                      Expanded(child: _testBody(state.question)),
-                      SizedBox(height: 32)
-                    ]),
-                  ))
+              _testBody(state.question)
             ]);
           }
           return Center(child: CircularProgressIndicator());
@@ -62,6 +57,8 @@ class _TestPageState extends State<TestPage> {
 
   void _onQuestionAnswered(dynamic answer) {
     _testBloc.answerCurrentQuestion(answer);
+    _scrollController.animateTo(0,
+        duration: Duration(milliseconds: 0), curve: Curves.easeOut);
   }
 
   Widget _testBody(Question question) {
@@ -71,9 +68,30 @@ class _TestPageState extends State<TestPage> {
             onAnswer: _onQuestionAnswered,
             questionText: (question as BinaryAnswerQuestion).question,
             imageUrl: question.imageUrl);
-        break;
+      case RememberWordsQuestion:
+        return RememberWordsQuestionPage(
+            onAnswer: _onQuestionAnswered,
+            words: (question as RememberWordsQuestion).words,
+            timeOut: question.timeout);
+      case WritingAnswerQuestion:
+        return WritingAnswerQuestionPage(
+            onAnswer: _onQuestionAnswered,
+            questionText: (question as WritingAnswerQuestion).question,
+            imageUrl: question.imageUrl,
+            description: question.description);
+      case ImageMatchingQuestion:
+        return ImageMatchingQuestionPage(
+            onAnswer: _onQuestionAnswered,
+            imageUrls: (question as ImageMatchingQuestion).imageUrls,
+            words: question.words);
     }
     return Center();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }
 

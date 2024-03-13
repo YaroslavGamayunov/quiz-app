@@ -1,0 +1,136 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:pep/constants.dart';
+import 'package:pep/screens/question_pages/test_page.dart';
+import 'package:pep/util/widgets.dart';
+
+class RememberWordsQuestionPage extends StatefulWidget implements ITestPage {
+  @override
+  final Function(dynamic) onAnswer;
+  final List<String> words;
+  final Duration timeOut;
+
+  RememberWordsQuestionPage(
+      {required this.onAnswer, required this.words, required this.timeOut});
+
+  @override
+  _RememberWordsQuestionPageState createState() =>
+      _RememberWordsQuestionPageState();
+}
+
+class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
+  bool _isTimerRunning = true;
+  late final List<String?> answers;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    answers = List.filled(widget.words.length, "");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return (_isTimerRunning ? _rememberWords : _enterWords);
+  }
+
+  Widget get _rememberWords => SliverList(
+          delegate: SliverChildListDelegate([
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            'Запомните слова',
+            style: Theme.of(context)
+                .textTheme
+                .headline1!
+                .copyWith(color: Colors.black),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        SizedBox(height: 24),
+        GridView(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            shrinkWrap: true,
+            physics: BouncingScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, crossAxisSpacing: 10, childAspectRatio: 2.5),
+            children: widget.words
+                .map((word) => Text(word,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(color: Colors.black)))
+                .toList()),
+        SizedBox(height: 24),
+        Container(
+            margin: EdgeInsets.symmetric(horizontal: 24),
+            child: Column(children: [
+              Text(
+                'Таймер',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(color: kSecondaryTextColor),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                '11 cекунд',
+                style: Theme.of(context)
+                    .textTheme
+                    .button!
+                    .copyWith(color: kPrimaryColor),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 24),
+              PepButton(
+                  title: 'Продолжить',
+                  onTap: () {
+                    setState(() {
+                      _isTimerRunning = false;
+                    });
+                  }),
+              SizedBox(height: 24),
+            ]))
+      ]));
+
+  Widget get _enterWords => SliverList(
+          delegate: SliverChildListDelegate([
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 24),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(
+              'Введите слова',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline1!
+                  .copyWith(color: Colors.black),
+              textAlign: TextAlign.start,
+            ),
+            SizedBox(height: 40),
+            _makeWordInputForm(widget.words.length),
+            SizedBox(height: 32),
+            PepButton(
+                title: "Прододжить",
+                onTap: () {
+                  _formKey.currentState?.save();
+                  widget.onAnswer(answers);
+                }),
+            SizedBox(height: 24)
+          ]),
+        )
+      ]));
+
+  Widget _makeWordInputForm(int count) {
+    List<Widget> forms = [];
+    for (var i = 0; i < count; i++) {
+      forms.add(PepFormField(
+          hint: "Слово ${i + 1}",
+          onSaved: (text) {
+            answers[i] = text;
+          }));
+      if (i + 1 < count) forms.add(SizedBox(height: 16));
+    }
+    return Form(key: _formKey, child: Column(children: forms));
+  }
+}

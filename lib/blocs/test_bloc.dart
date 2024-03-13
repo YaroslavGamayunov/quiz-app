@@ -56,12 +56,8 @@ class TestBloc extends Cubit<TestBlocState> {
         }
       },
       {
-        'type': 'binary',
-        'questionData': {
-          'question': 'Это место находится в Нью-Йорке?',
-          'imageUrl':
-              'http://i.mycdn.me/i?r=AzEPZsRbOZEKgBhR0XGMT1RkW7OIYyTXemcdw5QtywQuY6aKTM5SRkZCeTgDn6uOyic'
-        }
+        'type': 'image_matching',
+        'questionData': {'imageUrls': ['https://www.wykop.pl/cdn/c3201142/comment_oQMV69SA6PV2Bx5XK3vwbUfStw7MPoAc,w1200h627f.jpg', 'https://cdn.pixabay.com/photo/2017/06/01/12/58/tree-2363456_1280.jpg', 'https://www.startrescue.co.uk/media/c8878855-4f7e-4f52-96a7-9a748e610356.jpg', 'https://smartwatch.bg/system/images/92287/original/casio_edifice_efr526l7avuef.png'], 'words': ['Лиса', 'Наручные часы', 'Дерево', 'Машина']}
       },
       {
         'type': 'binary',
@@ -80,11 +76,21 @@ class TestBloc extends Cubit<TestBlocState> {
         }
       },
       {
-        'type': 'binary',
+        'type': 'remember',
         'questionData': {
-          'question': 'Это место находится в Париже?',
-          'imageUrl':
-              'https://im0-tub-ru.yandex.net/i?id=e2498a755f094de2b8d73fe3f05f8ed3-l&n=13'
+          'words': [
+            'Cиний',
+            'Карлик',
+            'Орел',
+            'Блокнот',
+            'Пожарник',
+            'Курица',
+            'Десерт',
+            'Небо',
+            'Ароматизатор',
+            'Офис'
+          ],
+          'timeout': 10,
         }
       },
       {
@@ -96,41 +102,64 @@ class TestBloc extends Cubit<TestBlocState> {
         }
       },
       {
-        'type': 'binary',
+        'type': 'writing_answer',
         'questionData': {
-          'question': 'Это место находится в Париже?',
+          'question': 'Что вы видите на картинке?',
+          'description': 'Что это такое?',
           'imageUrl':
-              'https://im0-tub-ru.yandex.net/i?id=e2498a755f094de2b8d73fe3f05f8ed3-l&n=13'
+              'https://ecolozen.com/fr/wp-content/uploads/2018/02/vegetarisme-solution-ultime-environnement.jpg'
         }
       },
       {
-        'type': 'binary',
+        'type': 'remember',
         'questionData': {
-          'question': 'Это место находится в Париже?',
-          'imageUrl':
-              'https://im0-tub-ru.yandex.net/i?id=e2498a755f094de2b8d73fe3f05f8ed3-l&n=13'
+          'words': [
+            'Cиний',
+            'Карлик',
+            'Орел',
+            'Блокнот',
+            'Пожарник',
+            'Курица',
+            'Десерт',
+            'Небо',
+            'Ароматизатор',
+            'Офис'
+          ],
+          'timeout': 10,
         }
       },
       {
-        'type': 'binary',
+        'type': 'writing_answer',
         'questionData': {
-          'question': 'Это место находится в Париже?',
+          'question': 'Что вы видите на картинке?',
+          'description': 'Что это такое?',
           'imageUrl':
-              'https://im0-tub-ru.yandex.net/i?id=e2498a755f094de2b8d73fe3f05f8ed3-l&n=13'
+              'https://ecolozen.com/fr/wp-content/uploads/2018/02/vegetarisme-solution-ultime-environnement.jpg'
         }
-      }
+      },
     ];
     _testQuestions.clear();
-    for (var question in testQuestionsJson) {
-      switch (question['type']) {
+    for (var questionJson in testQuestionsJson) {
+      Map<String, dynamic> questionData =
+          questionJson['questionData'] as Map<String, dynamic>;
+
+      Question? question;
+      switch (questionJson['type']) {
         case 'binary':
-          var questionData = question['questionData'];
-          if (questionData != null) {
-            _testQuestions.add(BinaryAnswerQuestion.fromJson(
-                questionData as Map<String, dynamic>));
-          }
+          question = BinaryAnswerQuestion.fromJson(questionData);
+          break;
+        case 'remember':
+          question = RememberWordsQuestion.fromJson(questionData);
+          break;
+        case 'writing_answer':
+          question = WritingAnswerQuestion.fromJson(questionData);
+          break;
+        case 'image_matching':
+          question = ImageMatchingQuestion.fromJson(questionData);
           break;
       }
+
+      if (question != null) _testQuestions.add(question);
     }
   }
 

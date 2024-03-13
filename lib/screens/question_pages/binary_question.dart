@@ -14,41 +14,45 @@ class BinaryAnswerQuestionPage extends StatelessWidget implements ITestPage {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(questionText,
-          style: Theme.of(context)
-              .textTheme
-              .headline1!
-              .copyWith(color: Colors.black)),
-      SizedBox(height: 24),
-      ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: 300),
-          child: FadeInImage.memoryNetwork(
-            placeholder: kTransparentImage,
-            image: imageUrl,
-          )),
-      Spacer(),
-      SizedBox(height: 24),
-      Row(
-        children: [
-          Flexible(
-              child: PepButton(
-                  title: 'Да',
-                  onTap: () {
-                    onAnswer('yes');
-                  })),
-          SizedBox(width: 8),
-          Flexible(
-              child: PepButton(
-                  color: Color(0xffC30000),
-                  title: 'Нет',
-                  onTap: () {
-                    onAnswer('no');
-                  }))
-        ],
-      ),
-      Spacer()
-    ]);
+    return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 24),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(questionText,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline1!
+                    .copyWith(color: Colors.black)),
+            SizedBox(height: 24),
+            ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 300),
+                child: FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: imageUrl,
+                )),
+            SizedBox(height: 24),
+            Row(
+              children: [
+                Flexible(
+                    child: PepButton(
+                        title: 'Да',
+                        onTap: () {
+                          onAnswer('yes');
+                        })),
+                SizedBox(width: 8),
+                Flexible(
+                    child: PepButton(
+                        color: Color(0xffC30000),
+                        title: 'Нет',
+                        onTap: () {
+                          onAnswer('no');
+                        }))
+              ],
+            ),
+            SizedBox(height: 24)
+          ]),
+        ));
   }
 
   @override
