@@ -6,6 +6,7 @@ import 'package:pep/questions.dart';
 import 'package:pep/screens/question_pages/binary_question.dart';
 import 'package:pep/screens/question_pages/image_matching.dart';
 import 'package:pep/screens/question_pages/remember_words.dart';
+import 'package:pep/screens/question_pages/schulte_table.dart';
 import 'package:pep/screens/question_pages/writing_answer.dart';
 import 'package:pep/screens/test_finished.dart';
 
@@ -21,12 +22,13 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  late TestBloc _testBloc = TestBloc();
+  late TestBloc _testBloc;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _testBloc = BlocProvider.of<TestBloc>(context);
     _testBloc.startCurrentTest();
   }
 
@@ -83,7 +85,13 @@ class _TestPageState extends State<TestPage> {
         return ImageMatchingQuestionPage(
             onAnswer: _onQuestionAnswered,
             imageUrls: (question as ImageMatchingQuestion).imageUrls,
-            words: question.words);
+            words: question.words,
+            questionText: question.questionText);
+      case SchulteTableQuestion:
+        return SchulteTableQuestionPage(
+            onAnswer: _onQuestionAnswered,
+            cells: (question as SchulteTableQuestion).cells,
+            description: question.description);
     }
     return Center();
   }

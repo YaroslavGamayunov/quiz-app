@@ -17,12 +17,9 @@ class OncomingTestPage extends StatefulWidget {
 }
 
 class _OncomingTestPageState extends State<OncomingTestPage> {
-  TestBloc _testBloc = TestBloc();
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TestBloc, TestBlocState>(
-        bloc: _testBloc,
         builder: (context, state) => Container(
             padding: EdgeInsets.symmetric(horizontal: 24),
             child:

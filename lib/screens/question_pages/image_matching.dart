@@ -9,9 +9,13 @@ import 'package:transparent_image/transparent_image.dart';
 class ImageMatchingQuestionPage extends StatefulWidget implements ITestPage {
   final List<String> imageUrls;
   final List<String> words;
+  final String questionText;
 
   ImageMatchingQuestionPage(
-      {required this.onAnswer, required this.imageUrls, required this.words});
+      {required this.onAnswer,
+      required this.imageUrls,
+      required this.words,
+      required this.questionText});
 
   @override
   _ImageMatchingQuestionPageState createState() =>
@@ -101,7 +105,14 @@ class _ImageMatchingQuestionPageState extends State<ImageMatchingQuestionPage> {
         delegate: SliverChildListDelegate([
       Container(
           margin: EdgeInsets.symmetric(horizontal: 24),
-          child: Column(children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(widget.questionText,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline1!
+                    .copyWith(color: Colors.black)),
+            SizedBox(height: 24),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

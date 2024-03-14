@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pep/blocs/test_bloc.dart';
+import 'package:pep/blocs/test_bloc_state.dart';
 import 'package:pep/constants.dart';
 import 'package:pep/screens/question_pages/test_page.dart';
 import 'package:pep/util/widgets.dart';
@@ -19,9 +22,10 @@ class RememberWordsQuestionPage extends StatefulWidget implements ITestPage {
 }
 
 class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
-  bool _isTimerRunning = true;
+  bool _isOnRememberingScreen = true;
   late final List<String?> answers;
   final _formKey = GlobalKey<FormState>();
+  int _timePassed = 0;
 
   @override
   void initState() {
@@ -31,7 +35,14 @@ class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return (_isTimerRunning ? _rememberWords : _enterWords);
+    return BlocConsumer<TestBloc, TestBlocState>(
+        listener: (context, state) {
+          if (state is OnQuestion) {
+            _timePassed = state.timePassed;
+          }
+        },
+        builder: (context, state) =>
+            (_isOnRememberingScreen ? _rememberWords : _enterWords));
   }
 
   Widget get _rememberWords => SliverList(
@@ -74,7 +85,7 @@ class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
                 textAlign: TextAlign.center,
               ),
               Text(
-                '11 cекунд',
+                '${_timePassed} cекунд',
                 style: Theme.of(context)
                     .textTheme
                     .button!
@@ -86,7 +97,7 @@ class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
                   title: 'Продолжить',
                   onTap: () {
                     setState(() {
-                      _isTimerRunning = false;
+                      _isOnRememberingScreen = false;
                     });
                   }),
               SizedBox(height: 24),
@@ -132,5 +143,10 @@ class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
       if (i + 1 < count) forms.add(SizedBox(height: 16));
     }
     return Form(key: _formKey, child: Column(children: forms));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

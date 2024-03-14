@@ -47,8 +47,19 @@ class WritingAnswerQuestion extends Question {
 class ImageMatchingQuestion extends Question {
   final List<String> imageUrls;
   final List<String> words;
+  final String questionText;
 
   ImageMatchingQuestion.fromJson(Map<String, dynamic> json)
       : imageUrls = json['imageUrls'],
-        words = json['words'];
+        words = json['words'],
+        questionText = json['questionText'];
+}
+
+class SchulteTableQuestion extends Question {
+  final List<String> cells;
+  final String description;
+
+  SchulteTableQuestion.fromJson(Map<String, dynamic> json)
+      : cells = json['cells'],
+        description = json['description'];
 }

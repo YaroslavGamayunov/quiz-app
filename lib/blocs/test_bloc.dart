@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pep/blocs/test_bloc_state.dart';
@@ -18,17 +20,17 @@ class TestBloc extends Cubit<TestBlocState> {
 
   List<Question> _testQuestions = [];
   List<dynamic> _userTestAnswers = [];
+  List<int> _answerTimes = [];
+
+  Timer? _timer;
 
   void answerCurrentQuestion(dynamic answer) {
+    _timer?.cancel();
     if (state is OnQuestion) {
       int currentId = (state as OnQuestion).index;
       _userTestAnswers[currentId] = answer;
       if (currentId + 1 < _userTestAnswers.length) {
-        currentId++;
-        emit(OnQuestion(
-            total: _testQuestions.length,
-            index: currentId,
-            question: _testQuestions[currentId]));
+        _startQuestion(index: ++currentId);
       } else {
         // TODO: Send request to server to get test results
         emit(TestFinished(
@@ -40,6 +42,17 @@ class TestBloc extends Cubit<TestBlocState> {
     }
   }
 
+  void _startQuestion({required int index}) {
+    var testState = OnQuestion(
+        total: _testQuestions.length,
+        index: index,
+        question: _testQuestions[index]);
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      emit(testState.copyWith(timePassed: _answerTimes[index]++));
+    });
+  }
+
   DateTimeRange? getAvailableTestDate() {
     return DateTimeRange(start: DateTime(0), end: DateTime(2050));
   }
@@ -47,6 +60,39 @@ class TestBloc extends Cubit<TestBlocState> {
   void _loadCurrentTest() {
     // Todo: load current test json into testQuestionsJson
     var testQuestionsJson = [
+      {
+        'type': 'schulte',
+        'questionData': {
+          'description': 'Выберите числа в порядке возрастания',
+          'cells': [
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            '11',
+            '12',
+            '13',
+            '14',
+            '15',
+            '16',
+            '17',
+            '18',
+            '19',
+            '20',
+            '21',
+            '22',
+            '23',
+            '24',
+            '25'
+          ]
+        }
+      },
       {
         'type': 'binary',
         'questionData': {
@@ -57,7 +103,16 @@ class TestBloc extends Cubit<TestBlocState> {
       },
       {
         'type': 'image_matching',
-        'questionData': {'imageUrls': ['https://www.wykop.pl/cdn/c3201142/comment_oQMV69SA6PV2Bx5XK3vwbUfStw7MPoAc,w1200h627f.jpg', 'https://cdn.pixabay.com/photo/2017/06/01/12/58/tree-2363456_1280.jpg', 'https://www.startrescue.co.uk/media/c8878855-4f7e-4f52-96a7-9a748e610356.jpg', 'https://smartwatch.bg/system/images/92287/original/casio_edifice_efr526l7avuef.png'], 'words': ['Лиса', 'Наручные часы', 'Дерево', 'Машина']}
+        'questionData': {
+          'imageUrls': [
+            'https://www.wykop.pl/cdn/c3201142/comment_oQMV69SA6PV2Bx5XK3vwbUfStw7MPoAc,w1200h627f.jpg',
+            'https://cdn.pixabay.com/photo/2017/06/01/12/58/tree-2363456_1280.jpg',
+            'https://www.startrescue.co.uk/media/c8878855-4f7e-4f52-96a7-9a748e610356.jpg',
+            'https://smartwatch.bg/system/images/92287/original/casio_edifice_efr526l7avuef.png'
+          ],
+          'words': ['Лиса', 'Наручные часы', 'Дерево', 'Машина'],
+          'questionText': 'Соедините картинку и слово'
+        }
       },
       {
         'type': 'binary',
@@ -157,6 +212,8 @@ class TestBloc extends Cubit<TestBlocState> {
         case 'image_matching':
           question = ImageMatchingQuestion.fromJson(questionData);
           break;
+        case 'schulte':
+          question = SchulteTableQuestion.fromJson(questionData);
       }
 
       if (question != null) _testQuestions.add(question);
@@ -164,12 +221,13 @@ class TestBloc extends Cubit<TestBlocState> {
   }
 
   void startCurrentTest() {
+    _timer?.cancel();
     _loadCurrentTest();
     _userTestAnswers =
         List.filled(_testQuestions.length, null, growable: false);
+    _answerTimes = List.filled(_testQuestions.length, 0);
     if (_testQuestions.isNotEmpty) {
-      emit(OnQuestion(
-          index: 0, total: _testQuestions.length, question: _testQuestions[0]));
+      _startQuestion(index: 0);
     }
   }
 }
