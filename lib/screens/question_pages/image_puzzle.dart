@@ -130,15 +130,15 @@ class _PuzzleWidget extends StatefulWidget {
 
 class _PuzzleWidgetState extends State<_PuzzleWidget> {
   late List<int> inserted; // ids from top grid
-  late List<int> tileInsertPositions;
-  int? currentlySelectedTile;
+  late List<int> tilePositionById;
+  int? currentlySelectedTileId;
   _PuzzleGridController _bottomGridController = _PuzzleGridController();
   _PuzzleGridController _topGridController = _PuzzleGridController();
 
   @override
   void initState() {
     super.initState();
-    tileInsertPositions =
+    tilePositionById =
         List.generate(widget.rows * widget.columns, (index) => -1);
     inserted = List.generate(widget.rows * widget.columns, (index) => -1);
   }
@@ -169,7 +169,7 @@ class _PuzzleWidgetState extends State<_PuzzleWidget> {
             child: Text("Повторите картинку",
                 style: Theme.of(context)
                     .textTheme
-                    .headline1!
+                    .displayLarge!
                     .copyWith(color: Colors.black))),
         SizedBox(
             width: 100,
@@ -182,24 +182,34 @@ class _PuzzleWidgetState extends State<_PuzzleWidget> {
       ]),
       SizedBox(height: 24),
       _PuzzleGrid(
+          // This is a Top grid
           controller: _topGridController,
           permutation: inserted,
           onGridTap: (int? tileId, int position) {
-            if (currentlySelectedTile != null) {
-              if (inserted[position] != -1) {
-                _bottomGridController.setTileSelection!(
+            if (currentlySelectedTileId == null && inserted[position] != -1) {
+              tilePositionById[inserted[position]] = -1;
+              _bottomGridController.setSelectedTileId!(
+                  inserted[position], false);
+              _topGridController.setTile!(position, null);
+              inserted[position] = -1;
+              return;
+            }
+
+            _bottomGridController.clearActiveSelectionHighlight?.call();
+            if (currentlySelectedTileId != null &&
+                tilePositionById[currentlySelectedTileId!] == -1) {
+              if (inserted[position] != -1 &&
+                  inserted[position] != currentlySelectedTileId) {
+                _bottomGridController.setSelectedTileId!(
                     inserted[position], false);
+                tilePositionById[inserted[position]] = -1;
+                inserted[position] = -1;
               }
 
-              if (tileInsertPositions[currentlySelectedTile!] != -1) {
-                var previousInsertPosition =
-                    tileInsertPositions[currentlySelectedTile!];
-                _topGridController.setTile!(previousInsertPosition, null);
-                inserted[previousInsertPosition] = -1;
-              }
-              tileInsertPositions[currentlySelectedTile!] = position;
-              inserted[position] = currentlySelectedTile!;
-              _topGridController.setTile!(position, currentlySelectedTile);
+              tilePositionById[currentlySelectedTileId!] = position;
+              inserted[position] = currentlySelectedTileId!;
+              _topGridController.setTile!(position, currentlySelectedTileId);
+              currentlySelectedTileId = null;
             }
             _checkCorrectness();
           },
@@ -209,18 +219,23 @@ class _PuzzleWidgetState extends State<_PuzzleWidget> {
           splitColumns: widget.columns),
       SizedBox(height: 32),
       _PuzzleGrid(
+          // This is a Bottom grid
           controller: _bottomGridController,
           permutation: widget.initialPermutation,
           image: widget.image,
           onGridTap: (int? tileId, int position) {
-            // if (currentlySelectedTile != null) {
-            //   _bottomGridController.setTileSelection!(
-            //       currentlySelectedTile!, false);
-            // }
-            currentlySelectedTile = tileId;
-            if (currentlySelectedTile != null) {
-              _bottomGridController.setTileSelection!(
-                  currentlySelectedTile!, true);
+            if (currentlySelectedTileId == tileId ||
+                (tileId != null && tilePositionById[tileId] != -1)) {
+              return;
+            }
+            if (currentlySelectedTileId != null) {
+              _bottomGridController.setSelectedTileId!(
+                  currentlySelectedTileId!, false);
+            }
+            currentlySelectedTileId = tileId;
+            if (tileId != null) {
+              _bottomGridController.setSelectedTileId!(
+                  currentlySelectedTileId!, true);
             }
           },
           crossAxisCount: 4,
@@ -232,13 +247,15 @@ class _PuzzleWidgetState extends State<_PuzzleWidget> {
 
 class _PuzzleGridController {
   Function(int position, int? tileId)? setTile;
-  Function(int tileId, bool isSelected)? setTileSelection;
-  Function(int position, bool isSelected)? setGridSelection;
+  Function(int tileId, bool isSelected)? setSelectedTileId;
+  Function(int position, bool isSelected)? setSelectedPosition;
+  Function()? clearActiveSelectionHighlight;
 
   void dispose() {
     setTile = null;
-    setGridSelection = null;
-    setGridSelection = null;
+    setSelectedPosition = null;
+    setSelectedPosition = null;
+    clearActiveSelectionHighlight = null;
   }
 }
 
@@ -269,6 +286,7 @@ class _PuzzleGridState extends State<_PuzzleGrid> {
   late final List<Bitmap> tileBitmaps;
   late List<int> positionByTileId;
   late List<int?> tileIdByPosition;
+  int activeSelectionPosition = -1;
 
   void _splitIntoTiles(
       {required Bitmap image,
@@ -307,6 +325,7 @@ class _PuzzleGridState extends State<_PuzzleGrid> {
         bitmap: ValueNotifier(
             permutation[i] == -1 ? null : tileBitmaps[permutation[i]]),
         selected: ValueNotifier(false),
+        isActiveSelection: ValueNotifier(false),
         onTap: () {
           onGridTap?.call(tileIdByPosition[i], i);
         },
@@ -319,9 +338,10 @@ class _PuzzleGridState extends State<_PuzzleGrid> {
     super.initState();
     var controller = widget.controller;
 
-    controller?.setGridSelection = _selectGrid;
+    controller?.setSelectedPosition = _setSelectedPosition;
     controller?.setTile = _setTile;
-    controller?.setTileSelection = _setTileSelection;
+    controller?.setSelectedTileId = _setSelectedTileId;
+    controller?.clearActiveSelectionHighlight = _clearActiveSelectionHighlight;
 
     _splitIntoTiles(
         image: widget.image,
@@ -331,7 +351,7 @@ class _PuzzleGridState extends State<_PuzzleGrid> {
         columns: widget.splitColumns);
   }
 
-  void _selectGrid(int position, bool isSelected) {
+  void _setSelectedPosition(int position, bool isSelected) {
     tiles[position].selected.value = isSelected;
   }
 
@@ -344,9 +364,23 @@ class _PuzzleGridState extends State<_PuzzleGrid> {
     tileIdByPosition[position] = tileId == null ? -1 : tileId;
   }
 
-  void _setTileSelection(int tileId, bool isSelected) {
+  void _setSelectedTileId(int tileId, bool isSelected) {
     if (positionByTileId[tileId] == -1) return;
     tiles[positionByTileId[tileId]].selected.value = isSelected;
+    if (isSelected) {
+      if (activeSelectionPosition != -1) {
+        tiles[activeSelectionPosition].isActiveSelection.value = false;
+      }
+      tiles[positionByTileId[tileId]].isActiveSelection.value = true;
+      activeSelectionPosition = positionByTileId[tileId];
+    }
+  }
+
+  void _clearActiveSelectionHighlight() {
+    if (activeSelectionPosition != -1) {
+      tiles[activeSelectionPosition].isActiveSelection.value = false;
+      activeSelectionPosition = -1;
+    }
   }
 
   @override
@@ -372,10 +406,15 @@ class _PuzzleGridState extends State<_PuzzleGrid> {
 class _PuzzleTile extends StatefulWidget {
   final ValueNotifier<Bitmap?> bitmap;
   final ValueNotifier<bool> selected;
+  final ValueNotifier<bool> isActiveSelection;
 
   final Function()? onTap;
 
-  _PuzzleTile({required this.bitmap, required this.selected, this.onTap});
+  _PuzzleTile(
+      {required this.bitmap,
+      required this.selected,
+      required this.isActiveSelection,
+      this.onTap});
 
   @override
   _PuzzleTileState createState() => _PuzzleTileState();
@@ -386,6 +425,9 @@ class _PuzzleTileState extends State<_PuzzleTile> {
   void initState() {
     super.initState();
     widget.selected.addListener(() {
+      setState(() {});
+    });
+    widget.isActiveSelection.addListener(() {
       setState(() {});
     });
     widget.bitmap.addListener(() {
@@ -401,7 +443,11 @@ class _PuzzleTileState extends State<_PuzzleTile> {
         },
         child: Container(
             decoration: BoxDecoration(
-                border: Border.all(color: kSecondaryTextColor, width: 1)),
+                border: Border.all(
+                    color: widget.isActiveSelection.value
+                        ? Colors.yellowAccent
+                        : kSecondaryTextColor,
+                    width: 1)),
             child: Opacity(
               child: _getImage(),
               opacity: (widget.selected.value ? 0.2 : 1.0),
