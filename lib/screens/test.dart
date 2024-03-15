@@ -5,6 +5,7 @@ import 'package:pep/blocs/test_bloc_state.dart';
 import 'package:pep/questions.dart';
 import 'package:pep/screens/question_pages/binary_question.dart';
 import 'package:pep/screens/question_pages/image_matching.dart';
+import 'package:pep/screens/question_pages/number_connection.dart';
 import 'package:pep/screens/question_pages/remember_words.dart';
 import 'package:pep/screens/question_pages/schulte_table.dart';
 import 'package:pep/screens/question_pages/writing_answer.dart';
@@ -91,6 +92,11 @@ class _TestPageState extends State<TestPage> {
         return SchulteTableQuestionPage(
             onAnswer: _onQuestionAnswered,
             cells: (question as SchulteTableQuestion).cells,
+            description: question.description);
+      case NumberConnectionQuestion:
+        return NumberConnectionPage(
+            onAnswer: _onQuestionAnswered,
+            points: (question as NumberConnectionQuestion).points,
             description: question.description);
     }
     return Center();

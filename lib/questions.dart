@@ -14,6 +14,9 @@ class BinaryAnswerQuestion extends Question {
   BinaryAnswerQuestion.fromJson(Map<String, dynamic> json)
       : question = json['question'],
         imageUrl = json['imageUrl'];
+
+  @override
+  List<Object?> get props => [question, imageUrl];
 }
 
 class RememberWordsQuestion extends Question {
@@ -53,6 +56,9 @@ class ImageMatchingQuestion extends Question {
       : imageUrls = json['imageUrls'],
         words = json['words'],
         questionText = json['questionText'];
+
+  @override
+  List<Object?> get props => [imageUrls, words, questionText];
 }
 
 class SchulteTableQuestion extends Question {
@@ -62,4 +68,35 @@ class SchulteTableQuestion extends Question {
   SchulteTableQuestion.fromJson(Map<String, dynamic> json)
       : cells = json['cells'],
         description = json['description'];
+
+  @override
+  List<Object?> get props => [cells, description];
+}
+
+class NumberPoint extends Equatable {
+  final double x;
+  final double y;
+  final int number;
+
+  NumberPoint.fromJson(Map<String, dynamic> json)
+      : x = json['x'],
+        y = json['y'],
+        number = json['number'];
+
+  @override
+  List<Object?> get props => [x, y, number];
+}
+
+class NumberConnectionQuestion extends Question {
+  final String description;
+  final List<NumberPoint> points;
+
+  NumberConnectionQuestion.fromJson(Map<String, dynamic> json)
+      : description = json['description'],
+        points = (json['points'] as List<Map<String, dynamic>>)
+            .map((pointJson) => NumberPoint.fromJson(pointJson))
+            .toList();
+
+  @override
+  List<Object?> get props => [description, points];
 }

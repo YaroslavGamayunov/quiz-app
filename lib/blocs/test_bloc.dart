@@ -61,6 +61,24 @@ class TestBloc extends Cubit<TestBlocState> {
     // Todo: load current test json into testQuestionsJson
     var testQuestionsJson = [
       {
+        'type': 'number_connection',
+        'questionData': {
+          'description': 'Соедините числа',
+          'points': [
+            {'x': 0.1, 'y': 0.1, 'number': 1},
+            {'x': 0.15, 'y': 0.8, 'number': 2},
+            {'x': 0.7, 'y': 0.9, 'number': 3},
+            {'x': 0.9, 'y': 0.7, 'number': 4},
+            {'x': 0.3, 'y': 0.3, 'number': 5},
+            {'x': 0.05, 'y': 0.5, 'number': 6},
+            {'x': 0.35, 'y': 0.6, 'number': 7},
+            {'x': 0.75, 'y': 0.4, 'number': 8},
+            {'x': 0.5, 'y': 0.2, 'number': 9},
+            {'x': 0.82, 'y': 0.1, 'number': 10},
+          ]
+        }
+      },
+      {
         'type': 'schulte',
         'questionData': {
           'description': 'Выберите числа в порядке возрастания',
@@ -214,6 +232,10 @@ class TestBloc extends Cubit<TestBlocState> {
           break;
         case 'schulte':
           question = SchulteTableQuestion.fromJson(questionData);
+          break;
+        case 'number_connection':
+          question = NumberConnectionQuestion.fromJson(questionData);
+          break;
       }
 
       if (question != null) _testQuestions.add(question);
