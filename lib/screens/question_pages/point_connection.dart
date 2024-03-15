@@ -1,13 +1,16 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pep/blocs/test_bloc.dart';
 import 'package:pep/blocs/test_bloc_state.dart';
 import 'package:pep/questions.dart';
+import 'package:pep/screens/question_pages/common/circle_connection/circle_connection_controller.dart';
 import 'package:pep/screens/question_pages/test_page.dart';
 import 'package:pep/util/widgets.dart';
 
 import '../../constants.dart';
-import 'common/circle_connection_widget.dart';
+import 'common/circle_connection/circle_connection_widget.dart';
 
 class PointConnectionPage extends StatefulWidget implements ITestPage {
   final List<EmptyCirclePoint> points;
@@ -26,6 +29,24 @@ class PointConnectionPage extends StatefulWidget implements ITestPage {
 class _PointConnectionPageState extends State<PointConnectionPage> {
   int _timePassed = 0;
   bool _isPreview = true;
+
+  late CircleConnectionController _circleConnectionController;
+  Map<CirclePoint, Set<CirclePoint>>? lastConnections;
+
+  @override
+  void initState() {
+    _circleConnectionController = CircleConnectionController();
+
+    _circleConnectionController.connectionFinishedListener = (connections) {
+      setState(() {
+        developer.log("Set connections: $connections");
+        lastConnections = connections;
+      });
+    };
+
+    developer.log("Set connectionFinishedListener: ${_circleConnectionController.connectionFinishedListener}");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +79,12 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
               Text("Cоедините точки линией, не отрывая пальца",
                   style: Theme.of(context)
                       .textTheme
-                      .headline1!
+                      .displayLarge!
                       .copyWith(color: Colors.black)),
               SizedBox(height: 16),
-              ConstrainedBox(
-                  constraints:
-                      BoxConstraints(minHeight: 220, minWidth: double.infinity),
+              SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  width: double.infinity,
                   child: CircleConnectionWidget(
                       isPreview: true,
                       initialPoints: widget.points,
@@ -75,7 +96,7 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
                   'Пример',
                   style: Theme.of(context)
                       .textTheme
-                      .button!
+                      .labelLarge!
                       .copyWith(color: kPrimaryColor),
                   textAlign: TextAlign.center,
                 ),
@@ -100,13 +121,14 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
             Text("Cоедините точки линией, не отрывая пальца",
                 style: Theme.of(context)
                     .textTheme
-                    .headline1!
+                    .displayLarge!
                     .copyWith(color: Colors.black)),
             SizedBox(height: 16),
-            ConstrainedBox(
-                constraints:
-                    BoxConstraints(minHeight: 220, minWidth: double.infinity),
+            SizedBox(
+                height: MediaQuery.of(context).size.height * 0.3,
+                width: double.infinity,
                 child: CircleConnectionWidget(
+                  controller: _circleConnectionController,
                   continuousConnection: true,
                   initialPoints: widget.points,
                 )),
@@ -116,7 +138,7 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
                 'Таймер',
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1!
+                    .bodyLarge!
                     .copyWith(color: kSecondaryTextColor),
                 textAlign: TextAlign.center,
               ),
@@ -127,7 +149,7 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
                 '${_timePassed} cекунд',
                 style: Theme.of(context)
                     .textTheme
-                    .button!
+                    .labelLarge!
                     .copyWith(color: kPrimaryColor),
                 textAlign: TextAlign.center,
               ),
@@ -137,8 +159,13 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
             PepButton(
                 title: 'Продолжить',
                 onTap: () {
-                  widget.onAnswer(null);
-                }),
+                  if (lastConnections != null) {
+                    widget.onAnswer(lastConnections);
+                  }
+                },
+                color: (lastConnections != null
+                    ? kPrimaryColor
+                    : kSecondaryTextColor)),
             SizedBox(height: 24),
           ])));
 }

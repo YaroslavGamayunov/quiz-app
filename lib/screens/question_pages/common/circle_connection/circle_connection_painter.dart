@@ -1,24 +1,23 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:pep/questions.dart';
 
-import '../../../constants.dart';
+import '../../../../constants.dart';
+import '../../../../questions.dart';
 
-class _CircleConnectionPainter extends CustomPainter {
+class CircleConnectionPainter extends CustomPainter {
   final bool isPreview;
   Offset? touchStart;
   Offset? touchEnd;
   final double minCircleRadius;
 
-  ValueNotifier<_Segment> repaint;
+  ValueNotifier<Segment> repaint;
 
   final TextStyle textStyle;
   List<CirclePoint> points;
   Map<CirclePoint, Set<CirclePoint>> connections;
 
-  _CircleConnectionPainter(
+  CircleConnectionPainter(
       {this.isPreview = false,
       required this.touchStart,
       required this.touchEnd,
@@ -75,7 +74,7 @@ class _CircleConnectionPainter extends CustomPainter {
         canvas.drawLine(_getCanvasOffset(touchStartPoint, size),
             _getCanvasOffset(touchEndPoint, size), linePaint);
         _connectPoints(touchStartPoint, touchEndPoint);
-        repaint.value = _Segment(touchEnd, touchEnd);
+        repaint.value = Segment(touchEnd, touchEnd);
       } else {
         canvas.drawLine(
             _getCanvasOffset(touchStartPoint, size), touchEnd!, linePaint);
@@ -144,104 +143,21 @@ class _CircleConnectionPainter extends CustomPainter {
     ..style = PaintingStyle.fill;
 
   @override
-  bool shouldRepaint(_CircleConnectionPainter oldDelegate) {
+  bool shouldRepaint(CircleConnectionPainter oldDelegate) {
     return oldDelegate.touchStart != touchStart ||
         oldDelegate.touchEnd != touchEnd ||
         oldDelegate.connections != connections;
   }
 
   @override
-  bool shouldRebuildSemantics(_CircleConnectionPainter oldDelegate) => false;
+  bool shouldRebuildSemantics(CircleConnectionPainter oldDelegate) => false;
 }
 
-class CircleConnectionWidget extends StatefulWidget {
-  final bool isPreview;
-  final bool continuousConnection;
-
-  final double minCircleRadius;
-  final List<CirclePoint> initialPoints;
-  final Map<CirclePoint, Set<CirclePoint>>? connections;
-
-  CircleConnectionWidget(
-      {this.continuousConnection = false,
-      this.isPreview = false,
-      required this.initialPoints,
-      this.minCircleRadius = 15,
-      this.connections});
-
-  @override
-  _CircleConnectionWidgetState createState() => _CircleConnectionWidgetState();
-}
-
-class _CircleConnectionWidgetState extends State<CircleConnectionWidget> {
-  Offset? start;
-  Offset? end;
-  late Map<CirclePoint, Set<CirclePoint>> connections;
-  ValueNotifier<_Segment> repaintNotifier =
-      ValueNotifier<_Segment>(_Segment(null, null));
-
-  @override
-  void initState() {
-    super.initState();
-    connections = widget.connections ?? Map();
-    repaintNotifier.addListener(() {
-      start = repaintNotifier.value.start;
-      end = repaintNotifier.value.end;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-        onPanStart: (details) {
-          print(details.localPosition);
-          setState(() {
-            start = details.localPosition;
-            end = null;
-          });
-        },
-        onPanUpdate: (details) {
-          setState(() {
-            end = details.localPosition;
-          });
-        },
-        onPanEnd: (details) {
-          if (widget.continuousConnection) {
-            connections.clear();
-            repaintNotifier.value = _Segment(null, null);
-          }
-          setState(() {
-            start = null;
-            end = null;
-          });
-        },
-        child: CustomPaint(
-            painter: _CircleConnectionPainter(
-                isPreview: widget.isPreview,
-                minCircleRadius: widget.minCircleRadius,
-                connections: connections,
-                touchStart: this.start,
-                touchEnd: this.end,
-                points: widget.initialPoints,
-                repaint: repaintNotifier,
-                textStyle: Theme.of(context)
-                    .textTheme
-                    .headline1!
-                    .copyWith(color: Colors.white))));
-  }
-
-  @override
-  void dispose() {
-    repaintNotifier.dispose();
-    super.dispose();
-  }
-}
-
-class _Segment {
+class Segment {
   Offset? start;
   Offset? end;
 
-  _Segment(this.start, this.end);
+  Segment(this.start, this.end);
 }
 
 class _Circle {
