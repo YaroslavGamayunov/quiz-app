@@ -1,123 +1,16 @@
-import 'dart:developer' as developer;
-
 import 'package:bitmap/bitmap.dart';
 import 'package:flutter/material.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/screens/question_pages/test_page.dart';
-import 'package:pep/util/widgets.dart';
 
-class ImagePuzzlePage extends StatefulWidget implements ITestPage {
-  final String imageUrl;
-  final List<int> puzzlePermutation;
+import '../../../constants.dart';
 
-  ImagePuzzlePage(
-      {required this.onAnswer,
-      required this.imageUrl,
-      required this.puzzlePermutation});
-
-  @override
-  final Function(dynamic) onAnswer;
-
-  @override
-  _ImagePuzzlePageState createState() => _ImagePuzzlePageState();
-}
-
-class _ImagePuzzlePageState extends State<ImagePuzzlePage> {
-  final int rows = 3;
-  final int columns = 3;
-
-  bool isPreview = true;
-  bool isCompleted = false;
-
-  Bitmap? image;
-
-  @override
-  void initState() {
-    super.initState();
-    Bitmap.fromProvider(NetworkImage(widget.imageUrl)).then((value) {
-      setState(() {
-        developer.log("loaded image", name: 'puzzle');
-        image = value;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverList(
-        delegate: SliverChildListDelegate([
-      image == null
-          ? Center(child: CircularProgressIndicator())
-          : isPreview
-              ? _preview(context, image!)
-              : _puzzle(context, image!)
-    ]));
-  }
-
-  Widget _preview(BuildContext context, Bitmap image) {
-    return Container(
-        margin: EdgeInsets.symmetric(horizontal: 24),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Повторите картинку",
-              style: Theme.of(context)
-                  .textTheme
-                  .headline1!
-                  .copyWith(color: Colors.black)),
-          SizedBox(height: 32),
-          SizedBox(
-              child: _PuzzleGrid(
-                  image: image,
-                  crossAxisCount: 3,
-                  splitRows: 3,
-                  splitColumns: 3)),
-          SizedBox(height: 24),
-          PepButton(
-              title: "Продолжить",
-              onTap: () {
-                setState(() {
-                  isPreview = false;
-                });
-              }),
-        ]));
-  }
-
-  Widget _puzzle(BuildContext context, Bitmap image) {
-    return Container(
-        margin: EdgeInsets.symmetric(horizontal: 24),
-        child: Column(children: [
-          _PuzzleWidget(
-            rows: 3,
-            columns: 3,
-            image: image,
-            initialPermutation: widget.puzzlePermutation,
-            onCompleted: (value) {
-              setState(() {
-                isCompleted = value;
-              });
-            },
-          ),
-          SizedBox(height: 24),
-          PepButton(
-              title: "Продолжить",
-              color: (isCompleted ? kPrimaryColor : kSecondaryTextColor),
-              onTap: () {
-                if (isCompleted) {
-                  widget.onAnswer(null);
-                }
-              }),
-          SizedBox(height: 24),
-        ]));
-  }
-}
-
-class _PuzzleWidget extends StatefulWidget {
+class PuzzleWidget extends StatefulWidget {
   final Bitmap image;
   final Function(bool completed) onCompleted;
   final int rows;
   final int columns;
   final List<int> initialPermutation;
 
-  _PuzzleWidget(
+  PuzzleWidget(
       {required this.image,
       required this.onCompleted,
       required this.rows,
@@ -125,10 +18,10 @@ class _PuzzleWidget extends StatefulWidget {
       required this.initialPermutation});
 
   @override
-  _PuzzleWidgetState createState() => _PuzzleWidgetState();
+  PuzzleWidgetState createState() => PuzzleWidgetState();
 }
 
-class _PuzzleWidgetState extends State<_PuzzleWidget> {
+class PuzzleWidgetState extends State<PuzzleWidget> {
   late List<int> inserted; // ids from top grid
   late List<int> tilePositionById;
   int? currentlySelectedTileId;
@@ -153,7 +46,7 @@ class _PuzzleWidgetState extends State<_PuzzleWidget> {
   void _checkCorrectness() {
     bool isCorrect = true;
     for (int i = 0; i < widget.rows * widget.columns; i++) {
-      if (inserted[i] != i) {
+      if (inserted[i] == -1) {
         isCorrect = false;
         break;
       }
@@ -173,7 +66,7 @@ class _PuzzleWidgetState extends State<_PuzzleWidget> {
                     .copyWith(color: Colors.black))),
         SizedBox(
             width: 100,
-            child: _PuzzleGrid(
+            child: PuzzleGrid(
                 permutation: null,
                 image: widget.image,
                 crossAxisCount: 3,
@@ -181,7 +74,7 @@ class _PuzzleWidgetState extends State<_PuzzleWidget> {
                 splitColumns: 3)),
       ]),
       SizedBox(height: 24),
-      _PuzzleGrid(
+      PuzzleGrid(
           // This is a Top grid
           controller: _topGridController,
           permutation: inserted,
@@ -218,7 +111,7 @@ class _PuzzleWidgetState extends State<_PuzzleWidget> {
           splitRows: widget.rows,
           splitColumns: widget.columns),
       SizedBox(height: 32),
-      _PuzzleGrid(
+      PuzzleGrid(
           // This is a Bottom grid
           controller: _bottomGridController,
           permutation: widget.initialPermutation,
@@ -259,7 +152,7 @@ class _PuzzleGridController {
   }
 }
 
-class _PuzzleGrid extends StatefulWidget {
+class PuzzleGrid extends StatefulWidget {
   final Bitmap image;
   final int splitColumns;
   final int splitRows;
@@ -268,7 +161,7 @@ class _PuzzleGrid extends StatefulWidget {
   final _PuzzleGridController? controller;
   final Function(int? tileId, int position)? onGridTap;
 
-  _PuzzleGrid(
+  PuzzleGrid(
       {required this.image,
       required this.crossAxisCount,
       required this.splitRows,
@@ -281,7 +174,7 @@ class _PuzzleGrid extends StatefulWidget {
   _PuzzleGridState createState() => _PuzzleGridState();
 }
 
-class _PuzzleGridState extends State<_PuzzleGrid> {
+class _PuzzleGridState extends State<PuzzleGrid> {
   late List<_PuzzleTile> tiles;
   late final List<Bitmap> tileBitmaps;
   late List<int> positionByTileId;
