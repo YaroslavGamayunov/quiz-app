@@ -123,3 +123,12 @@ class PointConnectionQuestion extends Question {
   @override
   List<Object?> get props => [points, connectionGraph];
 }
+
+class ImagePuzzleQuestion extends Question {
+  final String imageUrl;
+  final List<int> puzzlePermutation;
+
+  ImagePuzzleQuestion.fromJson(Map<String, dynamic> json)
+      : imageUrl = json['imageUrl'],
+        puzzlePermutation = json['puzzlePermutation'];
+}

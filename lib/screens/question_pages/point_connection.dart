@@ -72,17 +72,6 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
               SizedBox(height: 24),
               Align(
                 child: Text(
-                  'Таймер',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1!
-                      .copyWith(color: kSecondaryTextColor),
-                  textAlign: TextAlign.center,
-                ),
-                alignment: Alignment.center,
-              ),
-              Align(
-                child: Text(
                   'Пример',
                   style: Theme.of(context)
                       .textTheme

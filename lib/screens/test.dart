@@ -5,6 +5,7 @@ import 'package:pep/blocs/test_bloc_state.dart';
 import 'package:pep/questions.dart';
 import 'package:pep/screens/question_pages/binary_question.dart';
 import 'package:pep/screens/question_pages/image_matching.dart';
+import 'package:pep/screens/question_pages/image_puzzle.dart';
 import 'package:pep/screens/question_pages/number_connection.dart';
 import 'package:pep/screens/question_pages/point_connection.dart';
 import 'package:pep/screens/question_pages/remember_words.dart';
@@ -41,17 +42,22 @@ class _TestPageState extends State<TestPage> {
           if (state is TestFinished) {
             widget.onPageChanged(TestFinishedPage(
                 countOfQuestions:
-                state.correctAnswers + state.incorrectAnswers));
+                    state.correctAnswers + state.incorrectAnswers));
           }
         },
         bloc: _testBloc,
+        buildWhen: (previousState, state) =>
+            (previousState.runtimeType != state.runtimeType) ||
+            (previousState is OnQuestion &&
+                state is OnQuestion &&
+                previousState.index != state.index),
         builder: (context, state) {
           if (state is OnQuestion) {
             return CustomScrollView(controller: _scrollController, slivers: [
               SliverPersistentHeader(
                   floating: true,
                   delegate:
-                  _TestHeader(index: state.index, total: state.total)),
+                      _TestHeader(index: state.index, total: state.total)),
               _testBody(state.question)
             ]);
           }
@@ -100,9 +106,15 @@ class _TestPageState extends State<TestPage> {
             points: (question as NumberConnectionQuestion).points,
             description: question.description);
       case PointConnectionQuestion:
-        return PointConnectionPage(onAnswer: _onQuestionAnswered,
+        return PointConnectionPage(
+            onAnswer: _onQuestionAnswered,
             points: (question as PointConnectionQuestion).points,
             graph: question.connectionGraph);
+      case ImagePuzzleQuestion:
+        return ImagePuzzlePage(
+            onAnswer: _onQuestionAnswered,
+            imageUrl: (question as ImagePuzzleQuestion).imageUrl,
+            puzzlePermutation: question.puzzlePermutation);
     }
 
     return Center();
@@ -122,8 +134,8 @@ class _TestHeader extends SliverPersistentHeaderDelegate {
   final int total;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset,
-      bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
         decoration: BoxDecoration(
             color: Colors.white,
@@ -131,7 +143,7 @@ class _TestHeader extends SliverPersistentHeaderDelegate {
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 24),
           child:
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             SizedBox(height: 24),
             LinearProgressIndicator(
               color: kPrimaryColor,
@@ -141,8 +153,7 @@ class _TestHeader extends SliverPersistentHeaderDelegate {
             ),
             SizedBox(height: 16),
             Text('Вопрос ${index + 1}/$total',
-                style: Theme
-                    .of(context)
+                style: Theme.of(context)
                     .textTheme
                     .bodyText1!
                     .copyWith(color: kSecondaryTextColor)),

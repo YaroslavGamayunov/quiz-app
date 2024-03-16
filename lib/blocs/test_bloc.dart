@@ -61,6 +61,14 @@ class TestBloc extends Cubit<TestBlocState> {
     // Todo: load current test json into testQuestionsJson
     var testQuestionsJson = [
       {
+        'type': 'image_puzzle',
+        'questionData': {
+          'imageUrl':
+              'https://klike.net/uploads/posts/2020-04/1587719791_1.jpg',
+          'puzzlePermutation': [0, 5, 3, 8, 6, 2, 7, 1, 4]
+        }
+      },
+      {
         'type': 'point_connection',
         'questionData': {
           'points': [
@@ -257,6 +265,10 @@ class TestBloc extends Cubit<TestBlocState> {
           break;
         case 'point_connection':
           question = PointConnectionQuestion.fromJson(questionData);
+          break;
+        case 'image_puzzle':
+          question = ImagePuzzleQuestion.fromJson(questionData);
+          break;
       }
 
       if (question != null) _testQuestions.add(question);
