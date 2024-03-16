@@ -61,6 +61,25 @@ class TestBloc extends Cubit<TestBlocState> {
     // Todo: load current test json into testQuestionsJson
     var testQuestionsJson = [
       {
+        'type': 'point_connection',
+        'questionData': {
+          'points': [
+            {'x': 0.5, 'y': 0.1},
+            {'x': 0.1, 'y': 0.5},
+            {'x': 0.9, 'y': 0.5},
+            {'x': 0.1, 'y': 0.9},
+            {'x': 0.9, 'y': 0.9},
+          ],
+          'graph': [
+            [1, 2],
+            [0, 2, 3],
+            [0, 1, 4],
+            [1, 4],
+            [2, 3]
+          ]
+        }
+      },
+      {
         'type': 'number_connection',
         'questionData': {
           'description': 'Соедините числа',
@@ -236,6 +255,8 @@ class TestBloc extends Cubit<TestBlocState> {
         case 'number_connection':
           question = NumberConnectionQuestion.fromJson(questionData);
           break;
+        case 'point_connection':
+          question = PointConnectionQuestion.fromJson(questionData);
       }
 
       if (question != null) _testQuestions.add(question);

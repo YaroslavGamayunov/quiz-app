@@ -73,30 +73,53 @@ class SchulteTableQuestion extends Question {
   List<Object?> get props => [cells, description];
 }
 
-class NumberPoint extends Equatable {
+class CirclePoint extends Equatable {
   final double x;
   final double y;
-  final int number;
+  final String text;
 
-  NumberPoint.fromJson(Map<String, dynamic> json)
-      : x = json['x'],
-        y = json['y'],
-        number = json['number'];
+  CirclePoint({required this.x, required this.y, required this.text});
 
   @override
-  List<Object?> get props => [x, y, number];
+  List<Object?> get props => [x, y, text];
+}
+
+class NumberCirclePoint extends CirclePoint {
+  int get number => int.parse(super.text);
+
+  NumberCirclePoint.fromJson(Map<String, dynamic> json)
+      : super(x: json['x'], y: json['y'], text: json['number'].toString());
+}
+
+class EmptyCirclePoint extends CirclePoint {
+  EmptyCirclePoint.fromJson(Map<String, dynamic> json)
+      : super(x: json['x'], y: json['y'], text: '');
 }
 
 class NumberConnectionQuestion extends Question {
   final String description;
-  final List<NumberPoint> points;
+  final List<NumberCirclePoint> points;
 
   NumberConnectionQuestion.fromJson(Map<String, dynamic> json)
       : description = json['description'],
         points = (json['points'] as List<Map<String, dynamic>>)
-            .map((pointJson) => NumberPoint.fromJson(pointJson))
+            .map((pointJson) => NumberCirclePoint.fromJson(pointJson))
             .toList();
 
   @override
   List<Object?> get props => [description, points];
+}
+
+class PointConnectionQuestion extends Question {
+  final List<EmptyCirclePoint> points;
+  final List<List<int>> connectionGraph;
+
+  PointConnectionQuestion.fromJson(Map<String, dynamic> json)
+      : points = (json['points'] as List<Map<String, dynamic>>)
+            .map((pointJson) => EmptyCirclePoint.fromJson(pointJson))
+            .toList(),
+        connectionGraph = json['graph'];
+
+  @override
+  List<Object?> get props => [points, connectionGraph];
 }
