@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../questions.dart';
+import '../../questions.dart';
 
 class TestBlocState extends Equatable {
   @override
@@ -9,27 +9,35 @@ class TestBlocState extends Equatable {
 
 class InitialState extends TestBlocState {}
 
-class TestAvailable extends TestBlocState {
-  final DateTime testStartDate;
+class TestAvailable extends TestBlocState {}
 
-  TestAvailable({required this.testStartDate});
-
-  @override
-  List<Object?> get props => [testStartDate];
-}
+class TestLoading extends TestBlocState {}
 
 class TestFinished extends TestBlocState {
+  final DateTime testDate;
+  final String testId;
   final int correctAnswers;
-  final int incorrectAnswers;
+  final int percent;
   final int time;
+  final List<QuestionAnswerResult> answers;
 
   TestFinished(
-      {required this.correctAnswers,
-      required this.incorrectAnswers,
-      required this.time});
+      {required this.testDate,
+      required this.testId,
+      required this.correctAnswers,
+      required this.time,
+      required this.percent,
+      required this.answers});
 
   @override
-  List<Object?> get props => [correctAnswers, incorrectAnswers, time];
+  List<Object?> get props => [testId];
+}
+
+class QuestionAnswerResult {
+  final int time;
+  final int percent;
+
+  QuestionAnswerResult({required this.time, required this.percent});
 }
 
 class TestNotAvailable extends TestBlocState {}

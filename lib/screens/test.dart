@@ -1,25 +1,23 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pep/blocs/test_bloc.dart';
-import 'package:pep/blocs/test_bloc_state.dart';
-import 'package:pep/questions.dart';
-import 'package:pep/screens/question_pages/binary_question.dart';
-import 'package:pep/screens/question_pages/image_matching.dart';
-import 'package:pep/screens/question_pages/image_puzzle.dart';
-import 'package:pep/screens/question_pages/number_connection.dart';
-import 'package:pep/screens/question_pages/point_connection.dart';
-import 'package:pep/screens/question_pages/remember_words.dart';
-import 'package:pep/screens/question_pages/schulte_table.dart';
-import 'package:pep/screens/question_pages/writing_answer.dart';
-import 'package:pep/screens/test_finished.dart';
+import 'package:quizapp/blocs/test/test_bloc.dart';
+import 'package:quizapp/blocs/test/test_bloc_state.dart';
+import 'package:quizapp/questions.dart';
+import 'package:quizapp/screens/question_pages/binary_question.dart';
+import 'package:quizapp/screens/question_pages/image_matching.dart';
+import 'package:quizapp/screens/question_pages/image_puzzle/image_puzzle.dart';
+import 'package:quizapp/screens/question_pages/number_connection.dart';
+import 'package:quizapp/screens/question_pages/point_connection.dart';
+import 'package:quizapp/screens/question_pages/remember_words.dart';
+import 'package:quizapp/screens/question_pages/schulte_table.dart';
+import 'package:quizapp/screens/question_pages/writing_answer.dart';
+import 'package:quizapp/screens/test_finished.dart';
 
 import '../constants.dart';
 
 class TestPage extends StatefulWidget {
-  final Function(Widget page) onPageChanged;
-
-  TestPage({required this.onPageChanged});
-
   @override
   State<StatefulWidget> createState() => _TestPageState();
 }
@@ -40,9 +38,11 @@ class _TestPageState extends State<TestPage> {
     return BlocConsumer<TestBloc, TestBlocState>(
         listener: (context, state) {
           if (state is TestFinished) {
-            widget.onPageChanged(TestFinishedPage(
-                countOfQuestions:
-                    state.correctAnswers + state.incorrectAnswers));
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) =>
+                        TestFinishedMessagePage(testResult: state)),
+                (route) => false);
           }
         },
         bloc: _testBloc,
@@ -66,6 +66,7 @@ class _TestPageState extends State<TestPage> {
   }
 
   void _onQuestionAnswered(dynamic answer) {
+    developer.log("Answered question: $answer", name: "TestBloc");
     _testBloc.answerCurrentQuestion(answer);
     _scrollController.animateTo(0,
         duration: Duration(milliseconds: 0), curve: Curves.easeOut);
@@ -155,7 +156,7 @@ class _TestHeader extends SliverPersistentHeaderDelegate {
             Text('Вопрос ${index + 1}/$total',
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1!
+                    .bodyLarge!
                     .copyWith(color: kSecondaryTextColor)),
           ]),
         ));

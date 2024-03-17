@@ -26,7 +26,7 @@ class RememberWordsQuestion extends Question {
   RememberWordsQuestion({required this.words, required this.timeout});
 
   RememberWordsQuestion.fromJson(Map<String, dynamic> json)
-      : words = json['words'],
+      : words = List<String>.from(json['words']),
         timeout = Duration(seconds: json['timeout']);
 
   @override
@@ -53,8 +53,8 @@ class ImageMatchingQuestion extends Question {
   final String questionText;
 
   ImageMatchingQuestion.fromJson(Map<String, dynamic> json)
-      : imageUrls = json['imageUrls'],
-        words = json['words'],
+      : imageUrls = List<String>.from(json['imageUrls']),
+        words = List<String>.from(json['words']),
         questionText = json['questionText'];
 
   @override
@@ -66,7 +66,7 @@ class SchulteTableQuestion extends Question {
   final String description;
 
   SchulteTableQuestion.fromJson(Map<String, dynamic> json)
-      : cells = json['cells'],
+      : cells = List<String>.from(json['cells']),
         description = json['description'];
 
   @override
@@ -102,8 +102,9 @@ class NumberConnectionQuestion extends Question {
 
   NumberConnectionQuestion.fromJson(Map<String, dynamic> json)
       : description = json['description'],
-        points = (json['points'] as List<Map<String, dynamic>>)
-            .map((pointJson) => NumberCirclePoint.fromJson(pointJson))
+        points = (json['points'])
+            .map<NumberCirclePoint>(
+                (pointJson) => NumberCirclePoint.fromJson(pointJson))
             .toList();
 
   @override
@@ -115,10 +116,13 @@ class PointConnectionQuestion extends Question {
   final List<List<int>> connectionGraph;
 
   PointConnectionQuestion.fromJson(Map<String, dynamic> json)
-      : points = (json['points'] as List<Map<String, dynamic>>)
-            .map((pointJson) => EmptyCirclePoint.fromJson(pointJson))
-            .toList(),
-        connectionGraph = json['graph'];
+      : points = json['points']
+            .map<EmptyCirclePoint>((pointJson) =>
+                EmptyCirclePoint.fromJson(pointJson as Map<String, dynamic>))
+            .toList() as List<EmptyCirclePoint>,
+        connectionGraph = json['graph']
+            .map<List<int>>((l) => List<int>.from(l))
+            .toList() as List<List<int>>;
 
   @override
   List<Object?> get props => [points, connectionGraph];
@@ -129,6 +133,6 @@ class ImagePuzzleQuestion extends Question {
   final List<int> puzzlePermutation;
 
   ImagePuzzleQuestion.fromJson(Map<String, dynamic> json)
-      : imageUrl = json['imageUrl'],
-        puzzlePermutation = json['puzzlePermutation'];
+      : imageUrl = json['imageUrl'].toString(),
+        puzzlePermutation = List<int>.from(json['puzzlePermutation']);
 }

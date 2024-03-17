@@ -1,13 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/screens/test_result.dart';
+import 'package:quizapp/util/widgets.dart';
 
+import '../blocs/test/test_bloc_state.dart';
 import '../constants.dart';
 
-class TestFinishedPage extends StatelessWidget {
-  final int countOfQuestions;
+class TestFinishedMessagePage extends StatelessWidget {
+  final TestFinished testResult;
 
-  TestFinishedPage({required this.countOfQuestions});
+  TestFinishedMessagePage({required this.testResult});
 
   @override
   Widget build(BuildContext context) {
@@ -22,19 +23,26 @@ class TestFinishedPage extends StatelessWidget {
             value: 1.0,
           ),
           SizedBox(height: 16),
-          Text('Вопрос $countOfQuestions/$countOfQuestions',
+          Text(
+              'Вопрос ${testResult.answers.length}/${testResult.answers.length}',
               style: Theme.of(context)
                   .textTheme
-                  .bodyText1!
+                  .bodyLarge!
                   .copyWith(color: kSecondaryTextColor)),
           SizedBox(height: 32),
           Text("Вы завершили тест!",
               style: Theme.of(context)
                   .textTheme
-                  .headline1!
+                  .displayLarge!
                   .copyWith(color: Colors.black)),
           Spacer(),
-          PepButton(title: "Узнать результат", onTap: () {}),
+          QuizAppButton(
+              title: "Узнать результат",
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        TestResultPage(testResult: this.testResult)));
+              }),
           SizedBox(height: 24)
         ]));
   }
