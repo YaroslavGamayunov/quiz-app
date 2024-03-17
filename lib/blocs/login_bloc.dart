@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pep/api/client.dart';
 import 'package:pep/blocs/validation_state.dart';
 import 'package:pep/util/validation.dart';
+import 'package:openapi/api.dart';
 
 class NeedsRegistration extends Incorrect {
   NeedsRegistration()
@@ -14,14 +16,16 @@ class IncorrectEmail extends Incorrect {
 class LoginBloc extends Cubit<ValidationState> {
   LoginBloc(ValidationState initialState) : super(initialState);
 
-  validateEmail(String? email) {
-    var result = validateEmailFormat(email);
-    if (result != null) {
+  validateEmail(String? email) async {
+    try {
+      final result = await DefaultApi(apiClient).apiAuthEmailCheckPost(ModelsCheckEmailRequest()..email = email);
+      if (result.isUserRegistered) {
+        emit(Correct());
+      } else {
+        emit(NeedsRegistration());
+      }
+    } catch (e) {
       emit(IncorrectEmail());
-    } else if (!isEmailRegistered(email)) {
-      emit(NeedsRegistration());
-    } else {
-      emit(Correct());
     }
   }
 

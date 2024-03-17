@@ -31,6 +31,11 @@ dependencies:
   equatable: ^2.0.2
   transparent_image: ^2.0.0
   bitmap: ^0.1.2
+  openapi:
+    git:
+      url: https://github.com/tusa-plus/pep.git
+      ref: master
+      path: dart-client
 
 
   # The following adds the Cupertino Icons font to your application.
