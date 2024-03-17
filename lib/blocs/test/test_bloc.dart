@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizapp/blocs/test/test_answers_validation.dart';
 import 'package:quizapp/blocs/test/test_bloc_state.dart';
-import 'package:quizapp/questions.dart';
+import 'package:quizapp/blocs/test/test_questions_preloading.dart';
+import 'package:quizapp/data/questions.dart';
 
 class TestBloc extends Cubit<TestBlocState> {
   TestBloc() : super(InitialState());
@@ -47,17 +48,25 @@ class TestBloc extends Cubit<TestBlocState> {
     _testQuestions.clear();
     emit(TestLoading());
     final allTests = FirebaseFirestore.instance.collection("/test");
-    allTests.get().then((snapshot) {
-      final doc = snapshot.docs[0];
-      developer.log("loaded doc: $doc", name: "TestBloc");
-      final questions = parseTestQuestions(doc['data']);
-      _testQuestions = questions;
-      developer.log("loaded doc: $doc", name: "TestBloc");
-      emit(TestAvailable());
-    }).onError((error, stackTrace) {
-      developer.log("Error while loading test", name: "TestBloc", error: error);
-      emit(TestNotAvailable());
-    });
+    allTests
+        .get()
+        .then((snapshot) {
+          final doc = snapshot.docs[0];
+          developer.log("loaded doc: $doc", name: "TestBloc");
+          final questions = parseTestQuestions(doc['data']);
+          _testQuestions = questions;
+          developer.log("loaded doc: $doc", name: "TestBloc");
+          return questions;
+        })
+        .then(preloadQuestionData)
+        .then((_) {
+          emit(TestAvailable());
+        })
+        .onError((error, stackTrace) {
+          developer.log("Error while loading test",
+              name: "TestBloc", error: error);
+          emit(TestNotAvailable());
+        });
   }
 
   List<Question> parseTestQuestions(String testQuestionsString) {

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:quizapp/blocs/test/test_bloc_state.dart';
-import 'package:quizapp/questions.dart';
+import 'package:quizapp/data/questions.dart';
 
 TestFinished getTestResultByAnswers(
     List<Question> questions, List<dynamic> answers, List<int> times) {

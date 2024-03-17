@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../questions.dart';
+import '../../data/questions.dart';
 
 class TestBlocState extends Equatable {
   @override

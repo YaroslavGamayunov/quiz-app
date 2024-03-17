@@ -5,7 +5,11 @@ class Question extends Equatable {
   List<Object?> get props => [];
 }
 
-class BinaryAnswerQuestion extends Question {
+mixin QuestionWithImages on Question {
+  List<String> get imageUrls;
+}
+
+class BinaryAnswerQuestion extends Question with QuestionWithImages {
   final String question;
   final String imageUrl;
 
@@ -17,6 +21,9 @@ class BinaryAnswerQuestion extends Question {
 
   @override
   List<Object?> get props => [question, imageUrl];
+
+  @override
+  List<String> get imageUrls => [imageUrl];
 }
 
 class RememberWordsQuestion extends Question {
@@ -33,7 +40,7 @@ class RememberWordsQuestion extends Question {
   List<Object?> get props => [words];
 }
 
-class WritingAnswerQuestion extends Question {
+class WritingAnswerQuestion extends Question with QuestionWithImages {
   final String question;
   final String imageUrl;
   final String description;
@@ -45,9 +52,12 @@ class WritingAnswerQuestion extends Question {
 
   @override
   List<Object?> get props => [question, imageUrl, description];
+
+  @override
+  List<String> get imageUrls => [imageUrl];
 }
 
-class ImageMatchingQuestion extends Question {
+class ImageMatchingQuestion extends Question with QuestionWithImages {
   final List<String> imageUrls;
   final List<String> words;
   final String questionText;
@@ -128,11 +138,14 @@ class PointConnectionQuestion extends Question {
   List<Object?> get props => [points, connectionGraph];
 }
 
-class ImagePuzzleQuestion extends Question {
+class ImagePuzzleQuestion extends Question with QuestionWithImages {
   final String imageUrl;
   final List<int> puzzlePermutation;
 
   ImagePuzzleQuestion.fromJson(Map<String, dynamic> json)
       : imageUrl = json['imageUrl'].toString(),
         puzzlePermutation = List<int>.from(json['puzzlePermutation']);
+
+  @override
+  List<String> get imageUrls => [imageUrl];
 }

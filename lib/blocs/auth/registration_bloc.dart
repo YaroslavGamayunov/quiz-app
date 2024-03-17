@@ -5,7 +5,7 @@ import 'package:quizapp/blocs/auth/registration_events.dart';
 import 'package:quizapp/blocs/auth/validation_state.dart';
 import 'package:quizapp/util/validation.dart';
 
-import '../../api/auth.dart';
+import '../../data/api/auth.dart';
 
 class RegistrationFlowBloc extends Bloc<RegistrationEvent, ValidationState> {
   RegistrationFlowBloc(

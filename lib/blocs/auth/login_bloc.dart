@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quizapp/api/auth.dart';
 import 'package:quizapp/blocs/auth/validation_state.dart';
 import 'package:quizapp/util/validation.dart';
+
+import '../../data/api/auth.dart';
 
 class NeedsRegistration extends Incorrect {
   NeedsRegistration()
