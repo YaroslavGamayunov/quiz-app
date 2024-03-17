@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pep/constants.dart';
+import 'package:quizapp/constants.dart';
 
-class PepButton extends StatelessWidget {
+class QuizAppButton extends StatelessWidget {
   final String title;
   final void Function() onTap;
   final Color? color;
   final Widget? icon;
 
-  PepButton({required this.title, required this.onTap, this.color, this.icon})
+  QuizAppButton({required this.title, required this.onTap, this.color, this.icon})
       : super();
 
   @override
   Widget build(BuildContext context) {
-    Color buttonColor = color == null ? Theme.of(context).accentColor : color!;
+    Color buttonColor =
+        color == null ? Theme.of(context).colorScheme.secondary : color!;
     return Material(
         color: buttonColor,
         borderRadius: BorderRadius.circular(5),
@@ -49,7 +49,7 @@ class PepButton extends StatelessWidget {
   }
 }
 
-class PepFormField extends StatelessWidget {
+class QuizAppFormField extends StatelessWidget {
   final String hint;
   final FormFieldValidator<String>? validator;
   final FormFieldSetter<String>? onSaved;
@@ -58,7 +58,7 @@ class PepFormField extends StatelessWidget {
   final bool autoFocus;
   final FocusNode? focusNode;
 
-  PepFormField(
+  QuizAppFormField(
       {Key? key,
       this.hint = "",
       this.validator,
@@ -90,7 +90,7 @@ class PepFormField extends StatelessWidget {
               hintText: hint,
               hintStyle: Theme.of(context)
                   .textTheme
-                  .bodyText1!
+                  .bodyLarge!
                   .copyWith(color: kSecondaryTextColor),
               contentPadding: EdgeInsets.all(16)),
           style: Theme.of(context).textTheme.bodyText1!),
@@ -98,69 +98,11 @@ class PepFormField extends StatelessWidget {
   }
 }
 
-class PepRegistrationForm extends StatelessWidget {
-  final Widget body;
-  final Function() onContinue;
-
-  PepRegistrationForm({required this.body, required this.onContinue});
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(slivers: [
-      SliverFillRemaining(
-          hasScrollBody: false,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Column(children: [
-              SizedBox(height: 32),
-              body,
-              SizedBox(height: 32),
-              Spacer(),
-              PepButton(title: "Продолжить", onTap: onContinue),
-              SizedBox(height: 80)
-            ]),
-          ))
-    ]);
-  }
-}
-
-class PepRadioButton<T> extends StatelessWidget {
-  final T value;
-  final T? groupValue;
-  final ValueChanged<T?>? onChanged;
-
-  PepRadioButton(
-      {required this.value, required this.groupValue, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.scale(
-        scale: 1.5,
-        child: Radio(
-          value: value,
-          groupValue: groupValue,
-          onChanged: onChanged,
-          activeColor: kPrimaryColor,
-        ));
-    //fillColor: MaterialStateProperty.resolveWith(_getFillColor));
-  }
-
-  Color _getFillColor(Set<MaterialState> states) {
-    const Set<MaterialState> interactiveStates = <MaterialState>{
-      MaterialState.selected,
-    };
-    if (states.any(interactiveStates.contains)) {
-      return kPrimaryColor;
-    }
-    return kInputBackgroundColor;
-  }
-}
-
-class PepTestResultCard extends StatelessWidget {
+class QuizAppTestResultCard extends StatelessWidget {
   final double resultPercent;
   final Widget text;
 
-  PepTestResultCard({required this.resultPercent, required this.text});
+  QuizAppTestResultCard({required this.resultPercent, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +139,7 @@ class PepTestResultCard extends StatelessWidget {
                         '${(resultPercent * 100).round()}%',
                         style: Theme.of(context)
                             .textTheme
-                            .headline1!
+                            .displayLarge!
                             .copyWith(color: _getResultColor(resultPercent)),
                       ),
                       LinearProgressIndicator(

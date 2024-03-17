@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/screens/registration_forms/registration_form.dart';
 
 import '../../constants.dart';
 
@@ -12,7 +11,7 @@ class EmailCodeSent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PepRegistrationForm(body: _form(context), onContinue: onContinue);
+    return QuizAppRegistrationForm(body: _form(context), onContinue: onContinue);
   }
 
   Widget _form(context) =>
@@ -21,14 +20,14 @@ class EmailCodeSent extends StatelessWidget {
           "Регистрация",
           style: Theme.of(context)
               .textTheme
-              .headline1!
+              .displayLarge!
               .copyWith(color: Colors.black),
         ),
         SizedBox(height: 32),
         Text("На ваш электронный адрес ${email()} отправлен код подтверждения",
             style: Theme.of(context)
                 .textTheme
-                .bodyText1!
+                .bodyLarge!
                 .copyWith(color: kPrimaryColor)),
       ]);
 }

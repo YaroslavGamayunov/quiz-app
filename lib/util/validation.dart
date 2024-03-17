@@ -10,14 +10,15 @@ String? validateEmailFormat(String? email) {
   return null;
 }
 
-bool isEmailRegistered(String? email) {
+Future<bool> isUserRegistered({String? email}) async {
   if (email == null) {
     return false;
   }
-  if (email == 'a@a.a') {
-    return true;
-  }
-  return false;
+  return true;
+  // todo
+  // ModelsCheckEmailResponse? result = await DefaultApi(client)
+  //     .apiAuthEmailCheckPost(ModelsCheckEmailRequest(email: email));
+  // return result.isUserRegistered;
 }
 
 String? validatePasswordFormat(String? password) {

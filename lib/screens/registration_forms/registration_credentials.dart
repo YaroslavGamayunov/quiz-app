@@ -1,12 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pep/blocs/validation_state.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/screens/registration_forms/registration_form.dart';
+import 'package:quizapp/util/widgets.dart';
 
+import '../../blocs/auth/registration_bloc.dart';
+import '../../blocs/auth/registration_events.dart';
+import '../../blocs/auth/validation_state.dart';
 import '../../constants.dart';
-import '../../blocs/registration_bloc.dart';
-import '../../blocs/registration_events.dart';
 
 class RegistrationCredentialsForm extends StatefulWidget {
   final Function() onContinue;
@@ -37,8 +37,22 @@ class _RegistrationCredentialsFormState
     });
 
     _passwordController.addListener(() {
-      _registrationBloc
-          .add(FormUpdateEvent(data: {'password': _passwordController.text}));
+      _registrationBloc.add(FormUpdateEvent(data: {
+        'password': {
+          'password': _passwordController.text,
+          'confirmation': _passwordConfirmationController.text
+        },
+      }));
+      _registrationBloc.add(RegistrationFormSubmitEvent());
+    });
+
+    _passwordConfirmationController.addListener(() {
+      _registrationBloc.add(FormUpdateEvent(data: {
+        'password': {
+          'password': _passwordController.text,
+          'confirmation': _passwordConfirmationController.text
+        },
+      }));
       _registrationBloc.add(RegistrationFormSubmitEvent());
     });
   }
@@ -49,7 +63,8 @@ class _RegistrationCredentialsFormState
     return BlocBuilder<RegistrationFlowBloc, ValidationState>(
         bloc: _registrationBloc,
         builder: (context, state) {
-          return PepRegistrationForm(
+          _emailController.text = _registrationBloc.userData['email'];
+          return QuizAppRegistrationForm(
               body: _form(context, state), onContinue: widget.onContinue);
         });
   }
@@ -60,21 +75,21 @@ class _RegistrationCredentialsFormState
           "Регистрация",
           style: Theme.of(context)
               .textTheme
-              .headline1!
+              .displayLarge!
               .copyWith(color: Colors.black),
         ),
         SizedBox(height: 32),
-        PepFormField(
+        QuizAppFormField(
           controller: _emailController,
           hint: "Введите Email",
         ),
         SizedBox(height: 24),
-        PepFormField(
+        QuizAppFormField(
             controller: _passwordController,
             hint: "Введите пароль",
             obscureText: true),
         SizedBox(height: 24),
-        PepFormField(
+        QuizAppFormField(
             controller: _passwordConfirmationController,
             hint: "Подтвердите пароль",
             obscureText: true),
@@ -82,7 +97,7 @@ class _RegistrationCredentialsFormState
         Text((state is Incorrect ? state.errorMessage : ""),
             style: Theme.of(context)
                 .textTheme
-                .bodyText1!
+                .bodyLarge!
                 .copyWith(color: kPrimaryColor))
       ]);
 

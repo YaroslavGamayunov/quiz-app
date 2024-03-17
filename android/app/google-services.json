@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "164858430877",
-    "project_id": "quiz-app-a0ffc",
-    "storage_bucket": "quiz-app-a0ffc.appspot.com"
+    "project_number": "645320596332",
+    "project_id": "quiz-app-1ba67",
+    "storage_bucket": "quiz-app-1ba67.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:164858430877:android:fcf0816bb2f4d557955b74",
+        "mobilesdk_app_id": "1:645320596332:android:21ff14feb939a32d6bf149",
         "android_client_info": {
           "package_name": "com.yaroslavgamayunov.quizapp"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCQDQ3Z8NUCUzK3B8x77tK82f82k2UgxPM"
+          "current_key": "AIzaSyDqSKRa5XEozp4hAk2CH4OapjxweNm24vc"
         }
       ],
       "services": {

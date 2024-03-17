@@ -1,29 +1,29 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pep/blocs/registration_events.dart';
-import 'package:pep/blocs/validation_state.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/screens/home.dart';
-import 'package:pep/blocs/registration_bloc.dart';
-import 'package:pep/screens/registration_forms/date_of_birth.dart';
-import 'package:pep/screens/registration_forms/email_code_sent.dart';
-import 'package:pep/screens/registration_forms/enter_email_code.dart';
-import 'package:pep/screens/registration_forms/enter_phone_code.dart';
-import 'package:pep/screens/registration_forms/gender.dart';
-import 'package:pep/screens/registration_forms/name.dart';
-import 'package:pep/screens/registration_forms/registration_credentials.dart';
-import 'package:pep/screens/registration_forms/registration_ended.dart';
+import 'package:quizapp/blocs/auth/registration_events.dart';
+import 'package:quizapp/constants.dart';
+import 'package:quizapp/screens/home.dart';
+import 'package:quizapp/screens/registration_forms/name.dart';
+import 'package:quizapp/screens/registration_forms/registration_credentials.dart';
+import 'package:quizapp/screens/registration_forms/registration_ended.dart';
+
+import '../blocs/auth/registration_bloc.dart';
+import '../blocs/auth/validation_state.dart';
 
 class RegistrationFlowPage extends StatefulWidget {
+  final Map<String, dynamic> initialData;
+
+  RegistrationFlowPage({required this.initialData});
+
   @override
   State<StatefulWidget> createState() => _RegistrationFlowPageState();
 }
 
 class _RegistrationFlowPageState extends State<RegistrationFlowPage> {
-  final RegistrationFlowBloc _registrationBloc =
-      RegistrationFlowBloc(Incorrect(errorMessage: ''));
+  late final RegistrationFlowBloc _registrationBloc;
 
   final PageController _pageController = PageController(keepPage: true);
   late List<Widget> pages;
@@ -35,29 +35,24 @@ class _RegistrationFlowPageState extends State<RegistrationFlowPage> {
   @override
   void initState() {
     super.initState();
+    _registrationBloc = RegistrationFlowBloc(
+        initialData: widget.initialData,
+        initialState: Incorrect(errorMessage: ''));
     pages = [
       RegistrationCredentialsForm(onContinue: _goToNextForm),
-      EmailCodeSent(
-          onContinue: () {
-            _goToNextForm(checkFormCorrectness: false);
-          },
-          email: () => _registrationBloc.userData['email']),
-      EnterEmailCodeForm(onContinue: _goToNextForm),
-      NameForm(onContinue: _goToNextForm),
-      GenderForm(onContinue: _goToNextForm),
-      DateOfBirthForm(onContinue: _goToNextForm),
-      EnterPhoneCodeForm(onContinue: () {
-        setState(() {
-          _showBackButton = false;
-        });
-        _goToNextForm();
-      }),
+      NameForm(onContinue: _finishRegistration),
       RegistrationEnded(onContinue: () {
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => HomePage()),
-            (route) => false);
+                (route) => false);
       })
     ];
+  }
+
+  Future<void> _finishRegistration() async {
+    developer.log("finishing registration", name: "registration_flow");
+    _registrationBloc.add(EndRegistrationEvent());
+    _goToNextForm();
   }
 
   @override
@@ -70,29 +65,42 @@ class _RegistrationFlowPageState extends State<RegistrationFlowPage> {
                 listener: (context, state) {
                   _isFormCorrect = state is Correct;
                 },
-                builder: (context, state) => Column(children: [
-                      SizedBox(height: 24),
-                      Container(
-                        child: _RegistrationFlowHeader(
-                          showBackButton: _showBackButton,
-                          progress: (_currentPage + 1) / pages.length,
-                          onBackPressed: _goToPreviousForm,
-                        ),
-                        margin: EdgeInsets.only(left: 24, right: 24, top: 16),
-                      ),
-                      Expanded(
-                          child: PageView(
-                              onPageChanged: (pageNumber) {
-                                _currentPage = pageNumber;
-                                setState(() {});
-                              },
-                              controller: _pageController,
-                              physics: NeverScrollableScrollPhysics(),
-                              children: pages))
-                    ]))));
+                builder: (context, state) =>
+                state is Processing
+                    ? _buildFormProcessingState()
+                    : _buildRegistrationFormBody())));
   }
 
-  _goToNextForm({bool checkFormCorrectness: true}) {
+  Widget _buildFormProcessingState() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _buildRegistrationFormBody() {
+    return Column(children: [
+      SizedBox(height: 24),
+      Container(
+        child: _RegistrationFlowHeader(
+          showBackButton: _showBackButton,
+          progress: (_currentPage + 1) / pages.length,
+          onBackPressed: _goToPreviousForm,
+        ),
+        margin: EdgeInsets.only(left: 24, right: 24, top: 16),
+      ),
+      Expanded(
+          child: PageView(
+              onPageChanged: (pageNumber) {
+                _currentPage = pageNumber;
+                setState(() {});
+              },
+              controller: _pageController,
+              physics: NeverScrollableScrollPhysics(),
+              children: pages))
+    ]);
+  }
+
+  _goToNextForm({bool checkFormCorrectness = true}) {
     if (!checkFormCorrectness || _isFormCorrect) {
       _pageController.nextPage(
           duration: Duration(milliseconds: 200), curve: Curves.easeIn);
@@ -118,11 +126,10 @@ class _RegistrationFlowPageState extends State<RegistrationFlowPage> {
 }
 
 class _RegistrationFlowHeader extends StatelessWidget {
-  const _RegistrationFlowHeader(
-      {Key? key,
-      required this.progress,
-      required this.onBackPressed,
-      required this.showBackButton})
+  const _RegistrationFlowHeader({Key? key,
+    required this.progress,
+    required this.onBackPressed,
+    required this.showBackButton})
       : super(key: key);
 
   final Function() onBackPressed;

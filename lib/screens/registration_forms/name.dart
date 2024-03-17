@@ -1,9 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pep/blocs/registration_bloc.dart';
-import 'package:pep/blocs/registration_events.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/blocs/auth/registration_events.dart';
+import 'package:quizapp/screens/registration_forms/registration_form.dart';
+import 'package:quizapp/util/widgets.dart';
+
+import '../../blocs/auth/registration_bloc.dart';
 
 class NameForm extends StatefulWidget {
   final Function() onContinue;
@@ -26,20 +27,20 @@ class _NameFormState extends State<NameForm> {
     _registrationBloc = BlocProvider.of<RegistrationFlowBloc>(context);
     firstNameController.addListener(() {
       _registrationBloc
-          .add(FormUpdateEvent(data: {'firstName': firstNameController.text}));
+          .add(FormUpdateEvent(data: {'name': firstNameController.text}));
       _registrationBloc.add(NameFormSubmitEvent());
     });
 
     secondNameController.addListener(() {
       _registrationBloc.add(
-          FormUpdateEvent(data: {'secondName': secondNameController.text}));
+          FormUpdateEvent(data: {'surname': secondNameController.text}));
       _registrationBloc.add(NameFormSubmitEvent());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return PepRegistrationForm(body: _form(), onContinue: widget.onContinue);
+    return QuizAppRegistrationForm(body: _form(), onContinue: widget.onContinue);
   }
 
   _form() => Column(
@@ -50,13 +51,13 @@ class _NameFormState extends State<NameForm> {
               "Как вас зовут?",
               style: Theme.of(context)
                   .textTheme
-                  .headline1!
+                  .displayLarge!
                   .copyWith(color: Colors.black),
             ),
             SizedBox(height: 32),
-            PepFormField(hint: "Имя", controller: firstNameController),
+            QuizAppFormField(hint: "Имя", controller: firstNameController),
             SizedBox(height: 24),
-            PepFormField(hint: "Фамилия", controller: secondNameController),
+            QuizAppFormField(hint: "Фамилия", controller: secondNameController),
           ]);
 
   @override

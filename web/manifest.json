@@ -1,6 +1,6 @@
 {
-    "name": "pep",
-    "short_name": "pep",
+    "name": "quizapp",
+    "short_name": "quizapp",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

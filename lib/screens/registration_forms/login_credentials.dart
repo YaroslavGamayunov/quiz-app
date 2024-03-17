@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pep/blocs/login_bloc.dart';
-import 'package:pep/blocs/validation_state.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/screens/home.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/blocs/auth/login_bloc.dart';
+import 'package:quizapp/constants.dart';
+import 'package:quizapp/screens/home.dart';
+import 'package:quizapp/util/widgets.dart';
 
+import '../../blocs/auth/validation_state.dart';
 import '../registration_flow.dart';
 
 class LoginCredentialsForm extends StatefulWidget {
@@ -34,49 +34,49 @@ class LoginState extends State<LoginCredentialsForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocProvider<LoginBloc>(
-            create: (BuildContext context) => _loginBloc,
-            child: Container(
+        body: BlocConsumer<LoginBloc, ValidationState>(
+            listener: (context, state) => {
+                  if (state is LoggedIn)
+                    {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                          (route) => false)
+                    }
+                },
+            bloc: _loginBloc,
+            builder: (BuildContext context, state) => Container(
                 margin: EdgeInsets.symmetric(horizontal: 24),
-                child: BlocBuilder<LoginBloc, ValidationState>(
-                    bloc: _loginBloc,
-                    builder: (context, state) {
-                      return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Spacer(),
-                            SizedBox(height: 48),
-                            ConstrainedBox(
-                                constraints: BoxConstraints(minHeight: 300),
-                                child: _form(context, state)),
-                            Spacer(),
-                            PepButton(
-                                title: state is NeedsRegistration
-                                    ? "Зарегистрироваться"
-                                    : "Продолжить",
-                                onTap: () => {
-                                      if (state is NeedsRegistration)
-                                        {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      RegistrationFlowPage()))
-                                        }
-                                      else
-                                        {
-                                          // TODO: Log in
-                                          Navigator.of(context)
-                                              .pushAndRemoveUntil(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          HomePage()),
-                                                  (route) => false)
-                                        }
-                                    }),
-                            SizedBox(height: 80),
-                          ]);
-                    }))));
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Spacer(),
+                      SizedBox(height: 48),
+                      ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: 300),
+                          child: _form(context, state)),
+                      Spacer(),
+                      QuizAppButton(
+                          title: state is NeedsRegistration
+                              ? "Зарегистрироваться"
+                              : "Продолжить",
+                          onTap: () => {
+                                if (state is NeedsRegistration)
+                                  {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                RegistrationFlowPage(
+                                                    initialData: {
+                                                      'email':
+                                                          _emailController.text
+                                                    })))
+                                  }
+                                else
+                                  _loginBloc.logIn()
+                              }),
+                      SizedBox(height: 80),
+                    ]))));
   }
 
   Widget _form(BuildContext context, ValidationState state) =>
@@ -85,11 +85,11 @@ class LoginState extends State<LoginCredentialsForm> {
           "Вход",
           style: Theme.of(context)
               .textTheme
-              .headline1!
+              .displayLarge!
               .copyWith(color: Colors.black),
         ),
         SizedBox(height: 32),
-        PepFormField(
+        QuizAppFormField(
           controller: _emailController,
           hint: "Введите Email",
         ),
@@ -97,7 +97,7 @@ class LoginState extends State<LoginCredentialsForm> {
             visible: (state is! IncorrectEmail && state is! NeedsRegistration),
             child: Container(
               margin: EdgeInsets.only(top: 24),
-              child: PepFormField(
+              child: QuizAppFormField(
                   controller: _passwordController,
                   hint: "Введите пароль",
                   obscureText: true),
@@ -106,7 +106,7 @@ class LoginState extends State<LoginCredentialsForm> {
         Text((state is Incorrect ? state.errorMessage : ""),
             style: Theme.of(context)
                 .textTheme
-                .bodyText1!
+                .bodyLarge!
                 .copyWith(color: kPrimaryColor))
       ]);
 

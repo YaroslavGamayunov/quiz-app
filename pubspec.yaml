@@ -1,4 +1,4 @@
-name: pep
+name: quizapp
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -18,29 +18,27 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: '>=3.3.1 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_svg: ^0.22.0
+  flutter_svg: ^2.0.10+1
   email_validator: ^2.0.1
-  pin_code_fields: ^7.2.0
-  flutter_bloc: ^7.0.0
-  flutter_staggered_grid_view: ^0.4.0
+  pin_code_fields: ^8.0.1
+  flutter_bloc: ^8.1.4
+  flutter_staggered_grid_view: ^0.7.0
   equatable: ^2.0.2
   transparent_image: ^2.0.0
-  bitmap: ^0.1.2
-  openapi:
-    git:
-      url: https://github.com/tusa-plus/pep.git
-      ref: master
-      path: dart-client
+  bitmap: ^0.2.0
+  shared_preferences: ^2.0.6
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  firebase_auth: ^4.17.9
+  firebase_core: ^2.27.1
 
 dev_dependencies:
   flutter_test:
