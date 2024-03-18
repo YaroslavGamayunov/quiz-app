@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/constants.dart';
+import 'package:quizapp/screens/registration_forms/login_credentials.dart';
+import 'package:quizapp/widgets.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -21,62 +21,45 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        'Владимир Иванов',
+                        FirebaseAuth.instance.currentUser?.displayName ??
+                            "Пользователь",
                         textAlign: TextAlign.justify,
                         style: Theme.of(context)
                             .textTheme
-                            .headline1!
+                            .displayLarge!
                             .copyWith(color: Colors.black),
                       ),
                     ),
-                    IconButton(
-                      icon: SvgPicture.asset('assets/ic_edit.svg'),
-                      onPressed: () {},
-                    )
+                    SizedBox(width: 32)
                   ],
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Мужчина, 50 лет',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1!
-                      .copyWith(color: kSecondaryTextColor),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Москва, Россия',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1!
-                      .copyWith(color: kSecondaryTextColor),
                 ),
                 SizedBox(height: 32),
                 Text(
                   'Учетная запись',
                   style: Theme.of(context)
                       .textTheme
-                      .button!
+                      .labelLarge!
                       .copyWith(color: Colors.black),
                 ),
                 SizedBox(height: 16),
                 Text(
-                  '+7-(909)-767-68-77',
+                  FirebaseAuth.instance.currentUser?.email ?? "",
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText1!
-                      .copyWith(color: kSecondaryTextColor),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'vova@gmail.com',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1!
+                      .bodyLarge!
                       .copyWith(color: kSecondaryTextColor),
                 ),
                 SizedBox(height: 42),
-                PepButton(title: 'Редактировать тест', onTap: () {})
+                QuizAppButton(
+                    title: 'Выйти',
+                    color: Color(0xffC30000),
+                    onTap: () {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => LoginCredentialsForm()),
+                          (route) => false);
+                    })
               ],
             ),
           ))

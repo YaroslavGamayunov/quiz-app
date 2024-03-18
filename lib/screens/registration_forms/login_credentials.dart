@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizapp/blocs/auth/login_bloc.dart';
 import 'package:quizapp/constants.dart';
 import 'package:quizapp/screens/home.dart';
-import 'package:quizapp/util/widgets.dart';
+import 'package:quizapp/widgets.dart';
 
 import '../../blocs/auth/validation_state.dart';
 import '../registration_flow.dart';

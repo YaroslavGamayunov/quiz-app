@@ -1,4 +1,4 @@
-import '../../../../questions.dart';
+import '../../../../data/questions.dart';
 
 class CircleConnectionController {
   late Function() clearConnections;

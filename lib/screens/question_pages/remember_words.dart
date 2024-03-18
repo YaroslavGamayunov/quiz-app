@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pep/blocs/test_bloc.dart';
-import 'package:pep/blocs/test_bloc_state.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/screens/question_pages/test_page.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/blocs/test/test_bloc.dart';
+import 'package:quizapp/blocs/test/test_bloc_state.dart';
+import 'package:quizapp/constants.dart';
+import 'package:quizapp/screens/question_pages/test_page.dart';
+import 'package:quizapp/widgets.dart';
 
 class RememberWordsQuestionPage extends StatefulWidget implements ITestPage {
   @override
@@ -53,7 +52,7 @@ class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
             'Запомните слова',
             style: Theme.of(context)
                 .textTheme
-                .headline1!
+                .displayLarge!
                 .copyWith(color: Colors.black),
             textAlign: TextAlign.start,
           ),
@@ -93,7 +92,7 @@ class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 24),
-              PepButton(
+              QuizAppButton(
                   title: 'Продолжить',
                   onTap: () {
                     setState(() {
@@ -114,14 +113,14 @@ class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
               'Введите слова',
               style: Theme.of(context)
                   .textTheme
-                  .headline1!
+                  .displayLarge!
                   .copyWith(color: Colors.black),
               textAlign: TextAlign.start,
             ),
             SizedBox(height: 40),
             _makeWordInputForm(widget.words.length),
             SizedBox(height: 32),
-            PepButton(
+            QuizAppButton(
                 title: "Прододжить",
                 onTap: () {
                   _formKey.currentState?.save();
@@ -135,7 +134,7 @@ class _RememberWordsQuestionPageState extends State<RememberWordsQuestionPage> {
   Widget _makeWordInputForm(int count) {
     List<Widget> forms = [];
     for (var i = 0; i < count; i++) {
-      forms.add(PepFormField(
+      forms.add(QuizAppFormField(
           hint: "Слово ${i + 1}",
           onSaved: (text) {
             answers[i] = text;

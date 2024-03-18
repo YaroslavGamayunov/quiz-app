@@ -1,13 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pep/blocs/test_bloc.dart';
-import 'package:pep/blocs/test_bloc_state.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/questions.dart';
-import 'package:pep/screens/question_pages/common/circle_connection_widget.dart';
-import 'package:pep/screens/question_pages/test_page.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/blocs/test/test_bloc.dart';
+import 'package:quizapp/blocs/test/test_bloc_state.dart';
+import 'package:quizapp/constants.dart';
+import 'package:quizapp/data/questions.dart';
+import 'package:quizapp/screens/question_pages/common/circle_connection/circle_connection_widget.dart';
+import 'package:quizapp/screens/question_pages/test_page.dart';
+import 'package:quizapp/widgets.dart';
 
 class NumberConnectionPage extends StatefulWidget implements ITestPage {
   final List<NumberCirclePoint> points;
@@ -46,7 +45,7 @@ class _NumberConnectionPageState extends State<NumberConnectionPage> {
                       Text("Связь чисел",
                           style: Theme.of(context)
                               .textTheme
-                              .headline1!
+                              .displayLarge!
                               .copyWith(color: Colors.black)),
                       SizedBox(height: 16),
                       Text(
@@ -57,9 +56,9 @@ class _NumberConnectionPageState extends State<NumberConnectionPage> {
                             .copyWith(color: kSecondaryTextColor),
                       ),
                       SizedBox(height: 16),
-                      ConstrainedBox(
-                          constraints: BoxConstraints(
-                              minHeight: 250, minWidth: double.infinity),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.3,
+                          width: double.infinity,
                           child: CircleConnectionWidget(
                             initialPoints: widget.points,
                           )),
@@ -69,7 +68,7 @@ class _NumberConnectionPageState extends State<NumberConnectionPage> {
                           'Таймер',
                           style: Theme.of(context)
                               .textTheme
-                              .bodyText1!
+                              .bodyLarge!
                               .copyWith(color: kSecondaryTextColor),
                           textAlign: TextAlign.center,
                         ),
@@ -87,7 +86,7 @@ class _NumberConnectionPageState extends State<NumberConnectionPage> {
                         alignment: Alignment.center,
                       ),
                       SizedBox(height: 24),
-                      PepButton(
+                      QuizAppButton(
                           title: 'Продолжить',
                           onTap: () {
                             widget.onAnswer(null);

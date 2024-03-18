@@ -1,11 +1,13 @@
 import 'dart:developer' as developer;
 
 import 'package:bitmap/bitmap.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:quizapp/constants.dart';
 import 'package:quizapp/screens/question_pages/test_page.dart';
-import 'package:quizapp/util/widgets.dart';
+import 'package:quizapp/widgets.dart';
 
+import '../../../data/image_cache_manager.dart';
 import 'image_puzzle_widget.dart';
 
 class ImagePuzzlePage extends StatefulWidget implements ITestPage {
@@ -36,7 +38,9 @@ class _ImagePuzzlePageState extends State<ImagePuzzlePage> {
   @override
   void initState() {
     super.initState();
-    Bitmap.fromProvider(NetworkImage(widget.imageUrl)).then((value) {
+    Bitmap.fromProvider(CachedNetworkImageProvider(widget.imageUrl,
+            cacheManager: QuestionImagesCacheManager()))
+        .then((value) {
       setState(() {
         developer.log("loaded image", name: 'puzzle');
         image = value;
@@ -48,12 +52,12 @@ class _ImagePuzzlePageState extends State<ImagePuzzlePage> {
   Widget build(BuildContext context) {
     return SliverList(
         delegate: SliverChildListDelegate([
-          image == null
-              ? Center(child: CircularProgressIndicator())
-              : isPreview
+      image == null
+          ? Center(child: CircularProgressIndicator())
+          : isPreview
               ? _preview(context, image!)
               : _puzzle(context, image!)
-        ]));
+    ]));
   }
 
   Widget _preview(BuildContext context, Bitmap image) {

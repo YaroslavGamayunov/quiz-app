@@ -2,12 +2,12 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pep/blocs/test_bloc.dart';
-import 'package:pep/blocs/test_bloc_state.dart';
-import 'package:pep/questions.dart';
-import 'package:pep/screens/question_pages/common/circle_connection/circle_connection_controller.dart';
-import 'package:pep/screens/question_pages/test_page.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/blocs/test/test_bloc.dart';
+import 'package:quizapp/blocs/test/test_bloc_state.dart';
+import 'package:quizapp/data/questions.dart';
+import 'package:quizapp/screens/question_pages/common/circle_connection/circle_connection_controller.dart';
+import 'package:quizapp/screens/question_pages/test_page.dart';
+import 'package:quizapp/widgets.dart';
 
 import '../../constants.dart';
 import 'common/circle_connection/circle_connection_widget.dart';
@@ -44,7 +44,8 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
       });
     };
 
-    developer.log("Set connectionFinishedListener: ${_circleConnectionController.connectionFinishedListener}");
+    developer.log(
+        "Set connectionFinishedListener: ${_circleConnectionController.connectionFinishedListener}");
     super.initState();
   }
 
@@ -103,7 +104,7 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
                 alignment: Alignment.center,
               ),
               SizedBox(height: 24),
-              PepButton(
+              QuizAppButton(
                   title: 'Начать',
                   onTap: () {
                     _isPreview = false;
@@ -112,60 +113,67 @@ class _PointConnectionPageState extends State<PointConnectionPage> {
             ]))
       ]));
 
-  Widget _test(BuildContext context) => SliverFillRemaining(
-      hasScrollBody: false,
-      child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 24),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text("Cоедините точки линией, не отрывая пальца",
-                style: Theme.of(context)
-                    .textTheme
-                    .displayLarge!
-                    .copyWith(color: Colors.black)),
-            SizedBox(height: 16),
-            SizedBox(
-                height: MediaQuery.of(context).size.height * 0.3,
-                width: double.infinity,
-                child: CircleConnectionWidget(
-                  controller: _circleConnectionController,
-                  continuousConnection: true,
-                  initialPoints: widget.points,
-                )),
-            SizedBox(height: 24),
-            Align(
-              child: Text(
-                'Таймер',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: kSecondaryTextColor),
-                textAlign: TextAlign.center,
-              ),
-              alignment: Alignment.center,
-            ),
-            Align(
-              child: Text(
-                '${_timePassed} cекунд',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(color: kPrimaryColor),
-                textAlign: TextAlign.center,
-              ),
-              alignment: Alignment.center,
-            ),
-            SizedBox(height: 24),
-            PepButton(
-                title: 'Продолжить',
-                onTap: () {
-                  if (lastConnections != null) {
-                    widget.onAnswer(lastConnections);
-                  }
-                },
-                color: (lastConnections != null
-                    ? kPrimaryColor
-                    : kSecondaryTextColor)),
-            SizedBox(height: 24),
-          ])));
+  Widget _test(BuildContext context) => BlocConsumer<TestBloc, TestBlocState>(
+      listener: (context, state) {
+        if (state is OnQuestion) {
+          _timePassed = state.timePassed;
+        }
+      },
+      builder: (context, state) => SliverFillRemaining(
+          hasScrollBody: false,
+          child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Cоедините точки линией, не отрывая пальца",
+                        style: Theme.of(context)
+                            .textTheme
+                            .displayLarge!
+                            .copyWith(color: Colors.black)),
+                    SizedBox(height: 16),
+                    SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        width: double.infinity,
+                        child: CircleConnectionWidget(
+                          controller: _circleConnectionController,
+                          continuousConnection: true,
+                          initialPoints: widget.points,
+                        )),
+                    SizedBox(height: 24),
+                    Align(
+                      child: Text(
+                        'Таймер',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: kSecondaryTextColor),
+                        textAlign: TextAlign.center,
+                      ),
+                      alignment: Alignment.center,
+                    ),
+                    Align(
+                      child: Text(
+                        '${_timePassed} cекунд',
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelLarge!
+                            .copyWith(color: kPrimaryColor),
+                        textAlign: TextAlign.center,
+                      ),
+                      alignment: Alignment.center,
+                    ),
+                    SizedBox(height: 24),
+                    QuizAppButton(
+                        title: 'Продолжить',
+                        onTap: () {
+                          if (lastConnections != null) {
+                            widget.onAnswer(lastConnections);
+                          }
+                        },
+                        color: (lastConnections != null
+                            ? kPrimaryColor
+                            : kSecondaryTextColor)),
+                    SizedBox(height: 24),
+                  ]))));
 }

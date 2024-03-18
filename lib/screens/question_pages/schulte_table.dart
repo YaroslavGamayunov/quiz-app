@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pep/blocs/test_bloc.dart';
-import 'package:pep/blocs/test_bloc_state.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/screens/question_pages/test_page.dart';
-import 'package:pep/util/widgets.dart';
+import 'package:quizapp/blocs/test/test_bloc.dart';
+import 'package:quizapp/blocs/test/test_bloc_state.dart';
+import 'package:quizapp/constants.dart';
+import 'package:quizapp/screens/question_pages/test_page.dart';
+import 'package:quizapp/widgets.dart';
 
 class SchulteTableQuestionPage extends StatefulWidget implements ITestPage {
   final List<String> cells;
@@ -63,7 +63,7 @@ class _SchulteTableQuestionPageState extends State<SchulteTableQuestionPage> {
                     Text("Таблица Шульте",
                         style: Theme.of(context)
                             .textTheme
-                            .headline1!
+                            .displayLarge!
                             .copyWith(color: Colors.black)),
                     SizedBox(height: 16),
                     Text(
@@ -106,7 +106,7 @@ class _SchulteTableQuestionPageState extends State<SchulteTableQuestionPage> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 24),
-                    PepButton(
+                    QuizAppButton(
                         title: 'Продолжить',
                         onTap: () {
                           widget.onAnswer(selectionOrder);
@@ -135,7 +135,7 @@ class _SchulteTableQuestionPageState extends State<SchulteTableQuestionPage> {
                   child: Text(text,
                       style: Theme.of(context)
                           .textTheme
-                          .headline1!
+                          .displayLarge!
                           .copyWith(color: Colors.white)))),
         ));
   }

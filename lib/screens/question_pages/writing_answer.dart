@@ -1,9 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/screens/question_pages/test_page.dart';
-import 'package:pep/util/widgets.dart';
-import 'package:transparent_image/transparent_image.dart';
+import 'package:quizapp/constants.dart';
+import 'package:quizapp/screens/question_pages/test_page.dart';
+import 'package:quizapp/widgets.dart';
+
+import '../../data/image_cache_manager.dart';
 
 class WritingAnswerQuestionPage extends StatefulWidget implements ITestPage {
   final String questionText;
@@ -49,15 +50,14 @@ class _WritingAnswerQuestionPageState extends State<WritingAnswerQuestionPage> {
           Text(widget.questionText,
               style: Theme.of(context)
                   .textTheme
-                  .headline1!
+                  .displayLarge!
                   .copyWith(color: Colors.black)),
           SizedBox(height: 24),
           SizedBox(
               width: MediaQuery.of(context).size.width - 48,
-              child: FadeInImage.memoryNetwork(
-                placeholder: kTransparentImage,
-                image: widget.imageUrl,
-              )),
+              child: Image(
+                  image: CachedNetworkImageProvider(widget.imageUrl,
+                      cacheManager: QuestionImagesCacheManager()))),
           SizedBox(height: 8),
           Container(
               width: double.infinity,
@@ -65,13 +65,13 @@ class _WritingAnswerQuestionPageState extends State<WritingAnswerQuestionPage> {
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText1!
+                      .bodyLarge!
                       .copyWith(color: kSecondaryTextColor))),
           SizedBox(height: 32),
-          PepFormField(
+          QuizAppFormField(
               hint: 'Введите ответ', controller: _answerInputController),
           SizedBox(height: 16),
-          PepButton(
+          QuizAppButton(
               title: 'Продолжить',
               onTap: () {
                 if (_canContinue) {

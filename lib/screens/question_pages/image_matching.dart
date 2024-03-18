@@ -1,10 +1,12 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pep/constants.dart';
-import 'package:pep/screens/question_pages/test_page.dart';
-import 'package:pep/util/widgets.dart';
-import 'package:transparent_image/transparent_image.dart';
+import 'package:quizapp/constants.dart';
+import 'package:quizapp/screens/question_pages/test_page.dart';
+import 'package:quizapp/widgets.dart';
+
+import '../../data/image_cache_manager.dart';
 
 class ImageMatchingQuestionPage extends StatefulWidget implements ITestPage {
   final List<String> imageUrls;
@@ -110,7 +112,7 @@ class _ImageMatchingQuestionPageState extends State<ImageMatchingQuestionPage> {
             Text(widget.questionText,
                 style: Theme.of(context)
                     .textTheme
-                    .headline1!
+                    .displayLarge!
                     .copyWith(color: Colors.black)),
             SizedBox(height: 24),
             Row(
@@ -127,7 +129,7 @@ class _ImageMatchingQuestionPageState extends State<ImageMatchingQuestionPage> {
                 )
               ],
             ),
-            PepButton(
+            QuizAppButton(
                 title: "Продолжить",
                 color: (isFormFilled ? kPrimaryColor : kSecondaryTextColor),
                 onTap: () {
@@ -168,8 +170,9 @@ class _ImageContainer extends StatelessWidget {
                     maxWidth: MediaQuery.of(context).size.width * 0.5 - 48),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
-                    child: FadeInImage.memoryNetwork(
-                        placeholder: kTransparentImage, image: imageUrl)))));
+                    child: Image(
+                        image: CachedNetworkImageProvider(imageUrl,
+                            cacheManager: QuestionImagesCacheManager()))))));
   }
 }
 
@@ -202,7 +205,7 @@ class _WordContainer extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
-                        .button!
+                        .labelLarge!
                         .copyWith(color: Colors.white))),
           )),
     );

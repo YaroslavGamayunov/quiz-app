@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizapp/blocs/auth/registration_events.dart';
 import 'package:quizapp/screens/registration_forms/registration_form.dart';
-import 'package:quizapp/util/widgets.dart';
+import 'package:quizapp/widgets.dart';
 
 import '../../blocs/auth/registration_bloc.dart';
 

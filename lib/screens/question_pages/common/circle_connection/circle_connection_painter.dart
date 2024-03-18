@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../../../constants.dart';
-import '../../../../questions.dart';
+import '../../../../data/questions.dart';
 
 class CircleConnectionPainter extends CustomPainter {
   final bool isPreview;

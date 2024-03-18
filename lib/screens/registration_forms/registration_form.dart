@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../util/widgets.dart';
+import '../../widgets.dart';
 
 class QuizAppRegistrationForm extends StatelessWidget {
   final Widget body;
