@@ -59,7 +59,8 @@ class _TestResultPageState extends State<TestResultPage> {
                 (BuildContext context, bool innerBoxIsScrolled) {
               return <Widget>[buildAppBar(context, state.resultData)];
             },
-            body: buildAnswersList(state.resultData)));
+            body: buildAnswersList(
+                state.resultData, widget.validatedData != null)));
   }
 
   SliverAppBar buildAppBar(BuildContext context, TestResultData testResult) {
@@ -125,9 +126,11 @@ class _TestResultPageState extends State<TestResultPage> {
                     ]))));
   }
 
-  Widget buildAnswersList(TestResultData testResult) {
+  Widget buildAnswersList(TestResultData testResult, bool wasAlreadyValidated) {
     return ListView.builder(
-        itemCount: testResult.answers.length + 1,
+        itemCount: wasAlreadyValidated
+            ? testResult.answers.length
+            : testResult.answers.length + 1,
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         itemBuilder: (BuildContext context, int index) {
           if (index == testResult.answers.length) {
