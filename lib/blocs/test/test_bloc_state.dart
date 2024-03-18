@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:quizapp/data/test_result_data.dart';
 
 import '../../data/questions.dart';
 
@@ -14,30 +15,12 @@ class TestAvailable extends TestBlocState {}
 class TestLoading extends TestBlocState {}
 
 class TestFinished extends TestBlocState {
-  final DateTime testDate;
-  final String testId;
-  final int correctAnswers;
-  final int percent;
-  final int time;
-  final List<QuestionAnswerResult> answers;
+  final NotValidatedTestData testData;
 
-  TestFinished(
-      {required this.testDate,
-      required this.testId,
-      required this.correctAnswers,
-      required this.time,
-      required this.percent,
-      required this.answers});
+  TestFinished({required this.testData});
 
   @override
-  List<Object?> get props => [testId];
-}
-
-class QuestionAnswerResult {
-  final int time;
-  final int percent;
-
-  QuestionAnswerResult({required this.time, required this.percent});
+  List<Object?> get props => [testData.testId];
 }
 
 class TestNotAvailable extends TestBlocState {}

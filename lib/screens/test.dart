@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:quizapp/blocs/test/test_bloc.dart';
 import 'package:quizapp/blocs/test/test_bloc_state.dart';
-import 'package:quizapp/questions.dart';
+import 'package:quizapp/data/questions.dart';
 import 'package:quizapp/screens/question_pages/binary_question.dart';
 import 'package:quizapp/screens/question_pages/image_matching.dart';
 import 'package:quizapp/screens/question_pages/image_puzzle/image_puzzle.dart';
@@ -41,7 +41,7 @@ class _TestPageState extends State<TestPage> {
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
                     builder: (context) =>
-                        TestFinishedMessagePage(testResult: state)),
+                        TestFinishedMessagePage(data: state.testData)),
                 (route) => false);
           }
         },

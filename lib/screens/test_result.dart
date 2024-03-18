@@ -1,28 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:quizapp/blocs/test/test_bloc_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:quizapp/blocs/result/test_result_bloc.dart';
+import 'package:quizapp/blocs/result/test_result_bloc_state.dart';
+import 'package:quizapp/data/test_result_data.dart';
 
 import '../constants.dart';
-import '../util/widgets.dart';
+import '../widgets.dart';
 import 'oncoming_test.dart';
 
-class TestResultPage extends StatelessWidget {
-  final TestFinished testResult;
+class TestResultPage extends StatefulWidget {
+  final NotValidatedTestData? notValidatedData;
+  final TestResultData? validatedData;
 
-  TestResultPage({required this.testResult});
+  TestResultPage.forNotValidatedData({required this.notValidatedData})
+      : validatedData = null;
+
+  TestResultPage.forValidatedData({required this.validatedData})
+      : notValidatedData = null;
 
   @override
+  State<TestResultPage> createState() => _TestResultPageState();
+}
+
+class _TestResultPageState extends State<TestResultPage> {
+  late TestResultBloc _testResultBloc;
+
+  @override
+  void initState() {
+    if (widget.notValidatedData != null) {
+      _testResultBloc = TestResultBloc();
+      _testResultBloc.validate(widget.notValidatedData!);
+    } else {
+      _testResultBloc = TestResultBloc.alreadyValidated(widget.validatedData!);
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+        create: (context) => _testResultBloc,
+        child: BlocConsumer<TestResultBloc, TestResultBlocState>(
+          builder: (context, state) => state is TestResultLoadedState
+              ? buildTestResult(state)
+              : buildLoadingState(),
+          listener: (BuildContext context, TestResultBlocState state) {},
+        ));
+  }
+
+  Widget buildLoadingState() {
+    return Center(child: CircularProgressIndicator());
+  }
+
+  Widget buildTestResult(TestResultLoadedState state) {
     return Scaffold(
         body: NestedScrollView(
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[buildAppBar(context)];
+              return <Widget>[buildAppBar(context, state.resultData)];
             },
-            body: buildAnswersList()));
+            body: buildAnswersList(state.resultData)));
   }
 
-  SliverAppBar buildAppBar(BuildContext context) {
+  SliverAppBar buildAppBar(BuildContext context, TestResultData testResult) {
     return SliverAppBar(
         pinned: true,
         expandedHeight: 250.0,
@@ -85,7 +125,7 @@ class TestResultPage extends StatelessWidget {
                     ]))));
   }
 
-  Widget buildAnswersList() {
+  Widget buildAnswersList(TestResultData testResult) {
     return ListView.builder(
         itemCount: testResult.answers.length + 1,
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),

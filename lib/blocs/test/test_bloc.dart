@@ -4,14 +4,15 @@ import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:quizapp/blocs/test/test_answers_validation.dart';
 import 'package:quizapp/blocs/test/test_bloc_state.dart';
 import 'package:quizapp/blocs/test/test_questions_preloading.dart';
 import 'package:quizapp/data/questions.dart';
+import 'package:quizapp/data/test_result_data.dart';
 
 class TestBloc extends Cubit<TestBlocState> {
   TestBloc() : super(InitialState());
 
+  String _testId = "";
   List<Question> _testQuestions = [];
   List<dynamic> _userTestAnswers = [];
   List<int> _answerTimes = [];
@@ -26,8 +27,12 @@ class TestBloc extends Cubit<TestBlocState> {
       if (currentId + 1 < _userTestAnswers.length) {
         _startQuestion(index: ++currentId);
       } else {
-        emit(getTestResultByAnswers(
-            _testQuestions, _userTestAnswers, _answerTimes));
+        emit(TestFinished(
+            testData: NotValidatedTestData(
+                testId: _testId,
+                questions: _testQuestions,
+                answers: _userTestAnswers,
+                times: _answerTimes)));
       }
     }
   }
@@ -55,6 +60,7 @@ class TestBloc extends Cubit<TestBlocState> {
           developer.log("loaded doc: $doc", name: "TestBloc");
           final questions = parseTestQuestions(doc['data']);
           _testQuestions = questions;
+          _testId = doc.id;
           developer.log("loaded doc: $doc", name: "TestBloc");
           return questions;
         })
@@ -118,5 +124,9 @@ class TestBloc extends Cubit<TestBlocState> {
     if (_testQuestions.isNotEmpty) {
       _startQuestion(index: 0);
     }
+  }
+
+  void validateTest() {
+
   }
 }

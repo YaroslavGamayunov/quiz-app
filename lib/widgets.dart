@@ -8,7 +8,8 @@ class QuizAppButton extends StatelessWidget {
   final Color? color;
   final Widget? icon;
 
-  QuizAppButton({required this.title, required this.onTap, this.color, this.icon})
+  QuizAppButton(
+      {required this.title, required this.onTap, this.color, this.icon})
       : super();
 
   @override
@@ -101,11 +102,20 @@ class QuizAppFormField extends StatelessWidget {
 class QuizAppTestResultCard extends StatelessWidget {
   final double resultPercent;
   final Widget text;
+  final Function()? onClick;
 
-  QuizAppTestResultCard({required this.resultPercent, required this.text});
+  QuizAppTestResultCard(
+      {required this.resultPercent, required this.text, this.onClick});
 
   @override
   Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onClick,
+      child: _buildContent(context),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     return Container(
         decoration: BoxDecoration(boxShadow: [
           BoxShadow(

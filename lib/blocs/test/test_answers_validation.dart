@@ -1,11 +1,10 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
-import 'package:quizapp/blocs/test/test_bloc_state.dart';
 import 'package:quizapp/data/questions.dart';
+import 'package:quizapp/data/test_result_data.dart';
 
-TestFinished getTestResultByAnswers(
-    List<Question> questions, List<dynamic> answers, List<int> times) {
+TestResultData getTestResultByAnswers(String testId, List<Question> questions,
+    List<dynamic> answers, List<int> times) {
   int correct = Random.secure().nextInt(answers.length);
   int time = 0;
   int percent = 0;
@@ -16,8 +15,8 @@ TestFinished getTestResultByAnswers(
     res.add(QuestionAnswerResult(time: times[i], percent: p));
     percent += p;
   }
-  return TestFinished(
-      testId: UniqueKey().toString(),
+  return TestResultData(
+      testId: testId,
       testDate: DateTime.now(),
       correctAnswers: correct,
       time: time,
